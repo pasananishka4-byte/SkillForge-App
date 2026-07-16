@@ -53,8 +53,9 @@ val availableGames = listOf(
 @Composable
 fun GamesHubScreen(
     navController: NavController,
-    gameStatsManager: GameStatsManager = hiltViewModel<GamesHubViewModel>().gameStatsManager
+    viewModel: GamesHubViewModel = hiltViewModel()
 ) {
+    val gameStatsManager = viewModel.gameStatsManager
     val stats by gameStatsManager.allStats.collectAsState(initial = AllGameStats())
     val selectedDifficulty by gameStatsManager.selectedDifficulty.collectAsState(initial = "Normal")
     val scope = rememberCoroutineScope()
