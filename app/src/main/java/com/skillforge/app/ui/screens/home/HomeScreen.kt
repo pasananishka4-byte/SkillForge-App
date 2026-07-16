@@ -13,6 +13,7 @@ import androidx.compose.material.icons.filled.LocalFireDepartment
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.TrendingUp
 import androidx.compose.material.icons.filled.Bolt
+import androidx.compose.material.icons.filled.VideogameAsset
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -127,6 +128,13 @@ fun HomeScreen(
                     color = StreakFire,
                     modifier = Modifier.weight(1f),
                     onClick = { navController.navigate(Screen.DailyChallenge.route) }
+                )
+                QuickActionButton(
+                    text = "Mini\nGames",
+                    icon = Icons.Filled.VideogameAsset,
+                    color = CriticalThinkingColor,
+                    modifier = Modifier.weight(1f),
+                    onClick = { navController.navigate(Screen.GamesHub.route) }
                 )
             }
         }

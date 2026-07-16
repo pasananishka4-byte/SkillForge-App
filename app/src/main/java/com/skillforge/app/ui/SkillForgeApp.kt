@@ -38,6 +38,11 @@ import com.skillforge.app.ui.screens.skilltree.SkillDetailScreen
 import com.skillforge.app.ui.screens.onboarding.OnboardingScreen
 import com.skillforge.app.ui.screens.onboarding.OnboardingViewModel
 import com.skillforge.app.ui.screens.daily.DailyChallengeScreen
+import com.skillforge.app.ui.screens.games.GamesHubScreen
+import com.skillforge.app.ui.screens.games.MemoryMatchGame
+import com.skillforge.app.ui.screens.games.SpeedRoundGame
+import com.skillforge.app.ui.screens.games.PatternPuzzleGame
+import com.skillforge.app.ui.screens.games.SimonSaysGame
 
 sealed class Screen(val route: String) {
     data object Onboarding : Screen("onboarding")
@@ -55,6 +60,11 @@ sealed class Screen(val route: String) {
         fun createRoute(skillId: Long) = "skill_detail/$skillId"
     }
     data object DailyChallenge : Screen("daily_challenge")
+    data object GamesHub : Screen("games_hub")
+    data object MemoryMatch : Screen("game_memory_match")
+    data object SpeedRound : Screen("game_speed_round")
+    data object PatternPuzzle : Screen("game_pattern_puzzle")
+    data object SimonSays : Screen("game_simon_says")
 }
 
 data class BottomNavItem(
@@ -187,6 +197,21 @@ fun MainAppContent() {
                 DailyChallengeScreen(
                     onBack = { navController.popBackStack() }
                 )
+            }
+            composable(Screen.GamesHub.route) {
+                GamesHubScreen(navController = navController)
+            }
+            composable(Screen.MemoryMatch.route) {
+                MemoryMatchGame(onBack = { navController.popBackStack() })
+            }
+            composable(Screen.SpeedRound.route) {
+                SpeedRoundGame(onBack = { navController.popBackStack() })
+            }
+            composable(Screen.PatternPuzzle.route) {
+                PatternPuzzleGame(onBack = { navController.popBackStack() })
+            }
+            composable(Screen.SimonSays.route) {
+                SimonSaysGame(onBack = { navController.popBackStack() })
             }
         }
     }
