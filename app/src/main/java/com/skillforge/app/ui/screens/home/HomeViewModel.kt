@@ -15,9 +15,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 import javax.inject.Inject
 
 data class HomeUiState(
@@ -57,7 +54,6 @@ class HomeViewModel @Inject constructor(
                 progressRepository.getTotalCompleted(),
                 progressRepository.getTotalCorrect()
             ) { user, skills, totalCompleted, totalCorrect ->
-                val today = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
                 val todayProgress = progressRepository.getTodayProgress()
                 HomeUiState(
                     user = user,

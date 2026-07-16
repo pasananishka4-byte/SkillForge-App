@@ -33,7 +33,6 @@ import androidx.navigation.NavController
 import com.skillforge.app.domain.model.Skill
 import com.skillforge.app.ui.Screen
 import com.skillforge.app.ui.theme.*
-import com.skillforge.app.domain.repository.DailyChallengeRepository
 import androidx.compose.runtime.remember
 
 @OptIn(ExperimentalMaterial3Api::class)

@@ -41,7 +41,7 @@ object SeedData {
         skills.forEach { skill ->
             db.execSQL(
                 "INSERT INTO skills (id, name, category, description, icon, currentXP, level, maxLevel, sortOrder, isUnlocked, prerequisiteSkillId) " +
-                "VALUES (${skill.id}, '${skill.name}', '${skill.category}', '${skill.description}', '${skill.icon}', ${skill.currentXP}, ${skill.level}, ${skill.maxLevel}, ${skill.sortOrder}, ${skill.isUnlocked}, ${skill.prerequisiteSkillId})"
+                "VALUES (${skill.id}, '${skill.name}', '${skill.category}', '${skill.description}', '${skill.icon}', ${skill.currentXP}, ${skill.level}, ${skill.maxLevel}, ${skill.sortOrder}, ${if (skill.isUnlocked) 1 else 0}, ${skill.prerequisiteSkillId})"
             )
         }
     }

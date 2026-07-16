@@ -35,6 +35,8 @@ fun RadarChart(
     )
 
     Canvas(modifier = modifier) {
+        if (data.isEmpty()) return@Canvas
+
         val center = Offset(size.width / 2, size.height / 2)
         val radius = minOf(size.width, size.height) / 2 - 40.dp.toPx()
         val angleStep = (2 * Math.PI / data.size).toFloat()
@@ -130,6 +132,8 @@ fun BarChart(
     val maxVal = maxValue ?: (data.maxOfOrNull { it.value } ?: 1f)
 
     Canvas(modifier = modifier) {
+        if (data.isEmpty()) return@Canvas
+
         val barWidth = (size.width - (data.size - 1) * 8.dp.toPx()) / data.size
         val chartHeight = size.height - 20.dp.toPx()
 

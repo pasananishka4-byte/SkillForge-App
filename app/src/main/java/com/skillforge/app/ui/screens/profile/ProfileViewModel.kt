@@ -17,7 +17,7 @@ import javax.inject.Inject
 data class ProfileUiState(
     val user: User = User(),
     val achievementsUnlocked: Int = 0,
-    val totalAchievements: Int = 20,
+    val totalAchievements: Int = 30,
     val isLoading: Boolean = true
 )
 
