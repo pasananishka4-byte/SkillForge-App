@@ -220,7 +220,17 @@ object SeedData {
             AchievementData(17, "Daily Master", "Complete daily challenges for 7 days", "event_available", "daily", "daily_completed", 7, 75),
             AchievementData(18, "Century Club", "Earn 1000 total XP", "diamond", "xp", "total_xp", 1000, 50),
             AchievementData(19, "XP Hunter", "Earn 5000 total XP", "military_tech", "xp", "total_xp", 5000, 150),
-            AchievementData(20, "XP Legend", "Earn 10000 total XP", "workspace_premium", "xp", "total_xp", 10000, 500)
+            AchievementData(20, "XP Legend", "Earn 10000 total XP", "workspace_premium", "xp", "total_xp", 10000, 500),
+            AchievementData(21, "Game Night", "Play your first mini game", "videogame_asset", "games", "games_played", 1, 15),
+            AchievementData(22, "Gamer", "Play 10 mini games", "sports_esports", "games", "games_played", 10, 40),
+            AchievementData(23, "Arcade Master", "Play 50 mini games", "emoji_events", "games", "games_played", 50, 100),
+            AchievementData(24, "Code Cracker", "Win Code Breaker on Hard", "lock", "games", "code_breaker_hard", 1, 50),
+            AchievementData(25, "Speed Demon Gamer", "Score 200+ in Speed Round", "bolt", "games", "speed_round_high", 200, 50),
+            AchievementData(26, "Pattern Genius", "Complete all Pattern Puzzle levels", "psychology", "games", "pattern_complete", 12, 40),
+            AchievementData(27, "Memory Champion", "Win Memory Match in under 30 moves", "grid_on", "games", "memory_fast", 30, 40),
+            AchievementData(28, "Simon Master", "Reach round 10 in Simon Says", "videogame_asset", "games", "simon_round", 10, 45),
+            AchievementData(29, "Math Wizard", "Score 150+ in Math Duel", "calculate", "games", "math_high", 150, 45),
+            AchievementData(30, "Word Smith", "Unscramble 10 words in Word Scramble", "text_fields", "games", "words_ten", 10, 35)
         )
 
         achievements.forEach { a ->

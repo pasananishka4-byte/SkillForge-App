@@ -25,12 +25,17 @@ import kotlin.random.Random
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SpeedRoundGame(onBack: () -> Unit) {
-    val questions = remember { generateSpeedQuestions().shuffled().take(15) }
+fun SpeedRoundGame(
+    onBack: () -> Unit,
+    difficulty: String = "Normal",
+    onGameComplete: (xpEarned: Int, score: Int) -> Unit = { _, _ -> }
+) {
+    val questions = remember { generateSpeedQuestions().shuffled().take(when (difficulty) { "Easy" -> 10; "Hard" -> 20; else -> 15 }) }
+    val timerDuration = when (difficulty) { "Easy" -> 45; "Hard" -> 20; else -> 30 }
     var currentIndex by remember { mutableIntStateOf(0) }
     var score by remember { mutableIntStateOf(0) }
     var streak by remember { mutableIntStateOf(0) }
-    var timeLeft by remember { mutableFloatStateOf(30f) }
+    var timeLeft by remember { mutableFloatStateOf(timerDuration.toFloat()) }
     var isStarted by remember { mutableStateOf(false) }
     var isComplete by remember { mutableStateOf(false) }
     var selectedAnswer by remember { mutableIntStateOf(-1) }
@@ -39,11 +44,14 @@ fun SpeedRoundGame(onBack: () -> Unit) {
 
     LaunchedEffect(isStarted, isComplete) {
         if (isStarted && !isComplete) {
-            while (timeLeft > 0 && currentIndex < questions.size) {
-                delay(50)
-                timeLeft -= 0.05f
-            }
-            if (timeLeft <= 0) isComplete = true
+                while (timeLeft > 0 && currentIndex < questions.size) {
+                    delay(50)
+                    timeLeft -= 0.05f
+                }
+                if (timeLeft <= 0 || currentIndex >= questions.size) {
+                    isComplete = true
+                    onGameComplete(score, correctCount)
+                }
         }
     }
 
@@ -78,7 +86,7 @@ fun SpeedRoundGame(onBack: () -> Unit) {
 
         // Timer bar
         LinearProgressIndicator(
-            progress = timeLeft / 30f,
+            progress = timeLeft / timerDuration,
             modifier = Modifier.fillMaxWidth().height(8.dp).clip(RoundedCornerShape(4.dp)),
             color = if (timeLeft > 10) StreakFire else ErrorColor,
             trackColor = SurfaceVariant,

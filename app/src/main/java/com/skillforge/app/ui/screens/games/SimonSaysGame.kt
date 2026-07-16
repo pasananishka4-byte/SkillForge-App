@@ -42,7 +42,11 @@ enum class SimonState { SHOWING, PLAYER_TURN, GAME_OVER }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SimonSaysGame(onBack: () -> Unit) {
+fun SimonSaysGame(
+    onBack: () -> Unit,
+    difficulty: String = "Normal",
+    onGameComplete: (xpEarned: Int, score: Int) -> Unit = { _, _ -> }
+) {
     var sequence by remember { mutableStateOf(listOf(Random.nextInt(4)) ) }
     var playerInput by remember { mutableStateOf(listOf<Int>()) }
     var state by remember { mutableStateOf(SimonState.SHOWING) }
@@ -74,6 +78,7 @@ fun SimonSaysGame(onBack: () -> Unit) {
         if (playerInput[currentStep] != sequence[currentStep]) {
             state = SimonState.GAME_OVER
             if (score > highScore) highScore = score
+            onGameComplete(score, round - 1)
             return
         }
 

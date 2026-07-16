@@ -43,6 +43,11 @@ import com.skillforge.app.ui.screens.games.MemoryMatchGame
 import com.skillforge.app.ui.screens.games.SpeedRoundGame
 import com.skillforge.app.ui.screens.games.PatternPuzzleGame
 import com.skillforge.app.ui.screens.games.SimonSaysGame
+import com.skillforge.app.ui.screens.games.CodeBreakerGame
+import com.skillforge.app.ui.screens.games.WordScrambleGame
+import com.skillforge.app.ui.screens.games.MathDuelGame
+import com.skillforge.app.ui.screens.games.VisualMemoryGame
+import com.skillforge.app.ui.screens.games.GameCompletionViewModel
 
 sealed class Screen(val route: String) {
     data object Onboarding : Screen("onboarding")
@@ -61,10 +66,30 @@ sealed class Screen(val route: String) {
     }
     data object DailyChallenge : Screen("daily_challenge")
     data object GamesHub : Screen("games_hub")
-    data object MemoryMatch : Screen("game_memory_match")
-    data object SpeedRound : Screen("game_speed_round")
-    data object PatternPuzzle : Screen("game_pattern_puzzle")
-    data object SimonSays : Screen("game_simon_says")
+    data object MemoryMatch : Screen("game_memory_match?difficulty={difficulty}") {
+        fun createRoute(difficulty: String = "Normal") = "game_memory_match?difficulty=$difficulty"
+    }
+    data object SpeedRound : Screen("game_speed_round?difficulty={difficulty}") {
+        fun createRoute(difficulty: String = "Normal") = "game_speed_round?difficulty=$difficulty"
+    }
+    data object PatternPuzzle : Screen("game_pattern_puzzle?difficulty={difficulty}") {
+        fun createRoute(difficulty: String = "Normal") = "game_pattern_puzzle?difficulty=$difficulty"
+    }
+    data object SimonSays : Screen("game_simon_says?difficulty={difficulty}") {
+        fun createRoute(difficulty: String = "Normal") = "game_simon_says?difficulty=$difficulty"
+    }
+    data object CodeBreaker : Screen("game_code_breaker?difficulty={difficulty}") {
+        fun createRoute(difficulty: String = "Normal") = "game_code_breaker?difficulty=$difficulty"
+    }
+    data object WordScramble : Screen("game_word_scramble?difficulty={difficulty}") {
+        fun createRoute(difficulty: String = "Normal") = "game_word_scramble?difficulty=$difficulty"
+    }
+    data object MathDuel : Screen("game_math_duel?difficulty={difficulty}") {
+        fun createRoute(difficulty: String = "Normal") = "game_math_duel?difficulty=$difficulty"
+    }
+    data object VisualMemory : Screen("game_visual_memory?difficulty={difficulty}") {
+        fun createRoute(difficulty: String = "Normal") = "game_visual_memory?difficulty=$difficulty"
+    }
 }
 
 data class BottomNavItem(
@@ -201,17 +226,101 @@ fun MainAppContent() {
             composable(Screen.GamesHub.route) {
                 GamesHubScreen(navController = navController)
             }
-            composable(Screen.MemoryMatch.route) {
-                MemoryMatchGame(onBack = { navController.popBackStack() })
+            composable(
+                route = Screen.MemoryMatch.route,
+                arguments = listOf(navArgument("difficulty") { type = NavType.StringType; defaultValue = "Normal" })
+            ) { backStackEntry ->
+                val diff = backStackEntry.arguments?.getString("difficulty") ?: "Normal"
+                val vm: GameCompletionViewModel = hiltViewModel()
+                MemoryMatchGame(
+                    onBack = { navController.popBackStack() },
+                    difficulty = diff,
+                    onGameComplete = { xp, score -> vm.onGameComplete("Memory Match", xp, score) }
+                )
             }
-            composable(Screen.SpeedRound.route) {
-                SpeedRoundGame(onBack = { navController.popBackStack() })
+            composable(
+                route = Screen.SpeedRound.route,
+                arguments = listOf(navArgument("difficulty") { type = NavType.StringType; defaultValue = "Normal" })
+            ) { backStackEntry ->
+                val diff = backStackEntry.arguments?.getString("difficulty") ?: "Normal"
+                val vm: GameCompletionViewModel = hiltViewModel()
+                SpeedRoundGame(
+                    onBack = { navController.popBackStack() },
+                    difficulty = diff,
+                    onGameComplete = { xp, score -> vm.onGameComplete("Speed Round", xp, score) }
+                )
             }
-            composable(Screen.PatternPuzzle.route) {
-                PatternPuzzleGame(onBack = { navController.popBackStack() })
+            composable(
+                route = Screen.PatternPuzzle.route,
+                arguments = listOf(navArgument("difficulty") { type = NavType.StringType; defaultValue = "Normal" })
+            ) { backStackEntry ->
+                val diff = backStackEntry.arguments?.getString("difficulty") ?: "Normal"
+                val vm: GameCompletionViewModel = hiltViewModel()
+                PatternPuzzleGame(
+                    onBack = { navController.popBackStack() },
+                    difficulty = diff,
+                    onGameComplete = { xp, score -> vm.onGameComplete("Pattern Puzzle", xp, score) }
+                )
             }
-            composable(Screen.SimonSays.route) {
-                SimonSaysGame(onBack = { navController.popBackStack() })
+            composable(
+                route = Screen.SimonSays.route,
+                arguments = listOf(navArgument("difficulty") { type = NavType.StringType; defaultValue = "Normal" })
+            ) { backStackEntry ->
+                val diff = backStackEntry.arguments?.getString("difficulty") ?: "Normal"
+                val vm: GameCompletionViewModel = hiltViewModel()
+                SimonSaysGame(
+                    onBack = { navController.popBackStack() },
+                    difficulty = diff,
+                    onGameComplete = { xp, score -> vm.onGameComplete("Simon Says", xp, score) }
+                )
+            }
+            composable(
+                route = Screen.CodeBreaker.route,
+                arguments = listOf(navArgument("difficulty") { type = NavType.StringType; defaultValue = "Normal" })
+            ) { backStackEntry ->
+                val diff = backStackEntry.arguments?.getString("difficulty") ?: "Normal"
+                val vm: GameCompletionViewModel = hiltViewModel()
+                CodeBreakerGame(
+                    onBack = { navController.popBackStack() },
+                    difficulty = diff,
+                    onGameComplete = { xp, score -> vm.onGameComplete("Code Breaker", xp, score) }
+                )
+            }
+            composable(
+                route = Screen.WordScramble.route,
+                arguments = listOf(navArgument("difficulty") { type = NavType.StringType; defaultValue = "Normal" })
+            ) { backStackEntry ->
+                val diff = backStackEntry.arguments?.getString("difficulty") ?: "Normal"
+                val vm: GameCompletionViewModel = hiltViewModel()
+                WordScrambleGame(
+                    onBack = { navController.popBackStack() },
+                    difficulty = diff,
+                    onGameComplete = { xp, score -> vm.onGameComplete("Word Scramble", xp, score) }
+                )
+            }
+            composable(
+                route = Screen.MathDuel.route,
+                arguments = listOf(navArgument("difficulty") { type = NavType.StringType; defaultValue = "Normal" })
+            ) { backStackEntry ->
+                val diff = backStackEntry.arguments?.getString("difficulty") ?: "Normal"
+                val vm: GameCompletionViewModel = hiltViewModel()
+                MathDuelGame(
+                    onBack = { navController.popBackStack() },
+                    difficulty = diff,
+                    onGameComplete = { xp, score -> vm.onGameComplete("Math Duel", xp, score) }
+                )
+            }
+            composable(
+                route = Screen.VisualMemory.route,
+                arguments = listOf(navArgument("difficulty") { type = NavType.StringType; defaultValue = "Normal" })
+            ) { backStackEntry ->
+                val diff = backStackEntry.arguments?.getString("difficulty") ?: "Normal"
+                val vm: GameCompletionViewModel = hiltViewModel()
+                VisualMemoryGame(
+                    onBack = { navController.popBackStack() },
+                    difficulty = diff,
+                    onGameComplete = { xp, score -> vm.onGameComplete("Visual Memory", xp, score) }
+                )
             }
         }
     }

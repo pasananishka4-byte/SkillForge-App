@@ -37,8 +37,13 @@ data class MemoryCard(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MemoryMatchGame(onBack: () -> Unit) {
-    var cards by remember { mutableStateOf(generateCards()) }
+fun MemoryMatchGame(
+    onBack: () -> Unit,
+    difficulty: String = "Normal",
+    onGameComplete: (xpEarned: Int, score: Int) -> Unit = { _, _ -> }
+) {
+    val pairCount = when (difficulty) { "Easy" -> 6; "Hard" -> 12; else -> 8 }
+    var cards by remember { mutableStateOf(generateCards(pairCount)) }
     var flippedIndices by remember { mutableStateOf(listOf<Int>()) }
     var moves by remember { mutableIntStateOf(0) }
     var matches by remember { mutableIntStateOf(0) }
@@ -67,7 +72,11 @@ fun MemoryMatchGame(onBack: () -> Unit) {
                     this[i2] = this[i2].copy(isMatched = true)
                 }
                 matches++
-                if (matches == totalPairs) gameComplete = true
+                if (matches == totalPairs) {
+                    gameComplete = true
+                    val xp = calculateMemoryXP(moves, timer)
+                    onGameComplete(xp, moves)
+                }
             } else {
                 cards = cards.toMutableList().apply {
                     this[i1] = this[i1].copy(isFlipped = false)
@@ -123,7 +132,7 @@ fun MemoryMatchGame(onBack: () -> Unit) {
                     Spacer(Modifier.height(12.dp))
                     Button(
                         onClick = {
-                            cards = generateCards()
+                            cards = generateCards(pairCount)
                             flippedIndices = emptyList()
                             moves = 0; matches = 0; timer = 0; gameComplete = false
                         },
@@ -211,10 +220,11 @@ private fun calculateMemoryXP(moves: Int, time: Int): Int {
     return base + moveBonus + timeBonus
 }
 
-private fun generateCards(): List<MemoryCard> {
-    val symbols = listOf("🧠", "⚡", "🔥", "💎", "🎯", "🌟", "🚀", "🎨")
-    val colors = listOf(Primary, Secondary, CriticalThinkingColor, GeneralKnowledgeColor, MetaLearningColor, SocialEmotionalColor, StreakFire, ExpertColor)
-    val pairs = symbols.zip(colors).flatMap { (s, c) ->
+private fun generateCards(pairCount: Int = 8): List<MemoryCard> {
+    val symbols = listOf("🧠", "⚡", "🔥", "💎", "🎯", "🌟", "🚀", "🎨", "🎵", "🔮", "🦋", "🌈")
+    val colors = listOf(Primary, Secondary, CriticalThinkingColor, GeneralKnowledgeColor, MetaLearningColor, SocialEmotionalColor, StreakFire, ExpertColor, EasyColor, InfoColor, WarningColor, SuccessColor)
+    val selected = symbols.zip(colors).take(pairCount)
+    val pairs = selected.flatMap { (s, c) ->
         listOf(MemoryCard(Random.nextInt(), s, c), MemoryCard(Random.nextInt(), s, c))
     }
     return pairs.shuffled()

@@ -30,8 +30,15 @@ data class PatternLevel(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PatternPuzzleGame(onBack: () -> Unit) {
-    val levels = remember { generatePatternLevels() }
+fun PatternPuzzleGame(
+    onBack: () -> Unit,
+    difficulty: String = "Normal",
+    onGameComplete: (xpEarned: Int, score: Int) -> Unit = { _, _ -> }
+) {
+    val allLevels = remember { generatePatternLevels() }
+    val levels = remember(difficulty) {
+        when (difficulty) { "Easy" -> allLevels.take(6); "Hard" -> allLevels; else -> allLevels.take(9) }
+    }
     var currentLevel by remember { mutableIntStateOf(0) }
     var score by remember { mutableIntStateOf(0) }
     var isComplete by remember { mutableStateOf(false) }
@@ -170,7 +177,10 @@ fun PatternPuzzleGame(onBack: () -> Unit) {
                 selectedAnswer = -1
                 showResult = false
                 showHint = false
-                if (currentLevel >= levels.size) isComplete = true
+                if (currentLevel >= levels.size) {
+                    isComplete = true
+                    onGameComplete(score, currentLevel)
+                }
             }
         }
     }
