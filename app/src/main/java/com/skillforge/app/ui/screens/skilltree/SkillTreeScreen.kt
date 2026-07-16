@@ -111,7 +111,7 @@ fun CategoryHeader(category: String) {
 
 @Composable
 fun SkillNode(skill: Skill, categoryColor: Color, onClick: () -> Unit) {
-    val levelProgress = skill.level.toFloat() / skill.maxLevel
+    val levelProgress = if (skill.maxLevel > 0) skill.level.toFloat() / skill.maxLevel else 0f
     val animatedProgress by animateFloatAsState(targetValue = levelProgress, label = "skill")
 
     Card(

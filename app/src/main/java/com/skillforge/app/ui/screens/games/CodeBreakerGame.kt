@@ -27,9 +27,10 @@ import kotlin.random.Random
 
 private val pegColors = listOf(
     Color(0xFFE53935), Color(0xFF43A047), Color(0xFF1E88E5),
-    Color(0xFFFDD835), Color(0xFF8E24AA), Color(0xFFFF6D00)
+    Color(0xFFFDD835), Color(0xFF8E24AA), Color(0xFFFF6D00),
+    Color(0xFF00BCD4), Color(0xFFEC407A)
 )
-private val pegColorNames = listOf("Red", "Green", "Blue", "Yellow", "Purple", "Orange")
+private val pegColorNames = listOf("Red", "Green", "Blue", "Yellow", "Purple", "Orange", "Cyan", "Pink")
 
 private data class CodeGuess(
     val colors: List<Int>,

@@ -2,6 +2,7 @@ package com.skillforge.app.ui.screens.profile
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.skillforge.app.data.local.SkillForgeDatabase
 import com.skillforge.app.domain.model.User
 import com.skillforge.app.domain.repository.AchievementRepository
 import com.skillforge.app.domain.repository.UserRepository
@@ -9,6 +10,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -29,19 +31,25 @@ class ProfileViewModel @Inject constructor(
     val uiState: StateFlow<ProfileUiState> = _uiState.asStateFlow()
 
     init {
-        loadData()
+        viewModelScope.launch {
+            SkillForgeDatabase.awaitSeeding()
+            loadData()
+        }
     }
 
     private fun loadData() {
         viewModelScope.launch {
-            userRepository.getUser().collect { user ->
-                achievementRepository.getUnlockedCount().collect { unlocked ->
-                    _uiState.value = ProfileUiState(
-                        user = user,
-                        achievementsUnlocked = unlocked,
-                        isLoading = false
-                    )
-                }
+            combine(
+                userRepository.getUser(),
+                achievementRepository.getUnlockedCount()
+            ) { user, unlocked ->
+                ProfileUiState(
+                    user = user,
+                    achievementsUnlocked = unlocked,
+                    isLoading = false
+                )
+            }.collect { state ->
+                _uiState.value = state
             }
         }
     }

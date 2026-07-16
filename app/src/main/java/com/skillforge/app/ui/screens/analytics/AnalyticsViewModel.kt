@@ -2,6 +2,7 @@ package com.skillforge.app.ui.screens.analytics
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.skillforge.app.data.local.SkillForgeDatabase
 import com.skillforge.app.domain.model.Skill
 import com.skillforge.app.domain.repository.ProgressRepository
 import com.skillforge.app.domain.repository.SkillRepository
@@ -9,6 +10,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -17,7 +19,7 @@ data class AnalyticsUiState(
     val totalCorrect: Int = 0,
     val daysActive: Int = 0,
     val skills: List<Skill> = emptyList(),
-    val skillAccuracy: Map<Long, Pair<Int, Int>> = emptyMap(), // skillId -> (correct, total)
+    val skillAccuracy: Map<Long, Pair<Int, Int>> = emptyMap(),
     val isLoading: Boolean = true
 )
 
@@ -31,36 +33,34 @@ class AnalyticsViewModel @Inject constructor(
     val uiState: StateFlow<AnalyticsUiState> = _uiState.asStateFlow()
 
     init {
-        loadData()
+        viewModelScope.launch {
+            SkillForgeDatabase.awaitSeeding()
+            loadData()
+        }
     }
 
     private fun loadData() {
         viewModelScope.launch {
-            progressRepository.getTotalCompleted().collect { completed ->
-                progressRepository.getTotalCorrect().collect { correct ->
-                    progressRepository.getDaysActive().collect { days ->
-                        skillRepository.getAllSkills().collect { skills ->
-                            val skillAccuracy = mutableMapOf<Long, Pair<Int, Int>>()
-                            skills.forEach { skill ->
-                                progressRepository.getCorrectBySkill(skill.id).collect { c ->
-                                    progressRepository.getTotalBySkill(skill.id).collect { t ->
-                                        skillAccuracy[skill.id] = Pair(c, t)
-                                    }
-                                }
-                            }
+            val completed = progressRepository.getTotalCompleted().first()
+            val correct = progressRepository.getTotalCorrect().first()
+            val days = progressRepository.getDaysActive().first()
+            val skills = skillRepository.getAllSkills().first()
 
-                            _uiState.value = AnalyticsUiState(
-                                totalCompleted = completed,
-                                totalCorrect = correct,
-                                daysActive = days,
-                                skills = skills,
-                                skillAccuracy = skillAccuracy,
-                                isLoading = false
-                            )
-                        }
-                    }
-                }
+            val skillAccuracy = mutableMapOf<Long, Pair<Int, Int>>()
+            for (skill in skills) {
+                val c = progressRepository.getCorrectBySkill(skill.id).first()
+                val t = progressRepository.getTotalBySkill(skill.id).first()
+                skillAccuracy[skill.id] = Pair(c, t)
             }
+
+            _uiState.value = AnalyticsUiState(
+                totalCompleted = completed,
+                totalCorrect = correct,
+                daysActive = days,
+                skills = skills,
+                skillAccuracy = skillAccuracy,
+                isLoading = false
+            )
         }
     }
 }

@@ -51,10 +51,11 @@ abstract class SkillForgeDatabase : RoomDatabase() {
     companion object {
         @Volatile
         private var INSTANCE: SkillForgeDatabase? = null
-        private val seedingLatch = CountDownLatch(1)
+        private var seedingLatch = CountDownLatch(1)
 
         fun getDatabase(context: Context): SkillForgeDatabase {
             return INSTANCE ?: synchronized(this) {
+                val alreadyCreated = INSTANCE != null
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
                     SkillForgeDatabase::class.java,
@@ -71,6 +72,13 @@ abstract class SkillForgeDatabase : RoomDatabase() {
                                 }
                             }
                         }
+
+                        override fun onOpen(db: SupportSQLiteDatabase) {
+                            super.onOpen(db)
+                            if (seedingLatch.count > 0) {
+                                seedingLatch.countDown()
+                            }
+                        }
                     })
                     .build()
                 INSTANCE = instance
@@ -79,7 +87,10 @@ abstract class SkillForgeDatabase : RoomDatabase() {
         }
 
         suspend fun awaitSeeding() {
-            seedingLatch.await(10, TimeUnit.SECONDS)
+            try {
+                seedingLatch.await(5, TimeUnit.SECONDS)
+            } catch (_: InterruptedException) {
+            }
         }
     }
 }

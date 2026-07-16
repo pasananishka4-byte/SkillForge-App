@@ -61,7 +61,7 @@ private fun generateProblems(difficulty: String, count: Int): List<MathProblem> 
 
         val wrongAnswers = mutableSetOf<Int>()
         while (wrongAnswers.size < 3) {
-            val wrong = ans + random.nextInt(-10, 11).coerceAtLeast(1)
+            val wrong = ans + random.nextInt(-10, 11).coerceAtLeast(-10).coerceAtMost(10)
             if (wrong != ans && wrong > 0) wrongAnswers.add(wrong)
         }
         val options = (wrongAnswers.toList() + ans).shuffled()
@@ -87,6 +87,7 @@ fun MathDuelGame(
     var streak by remember { mutableIntStateOf(0) }
     var correctCount by remember { mutableIntStateOf(0) }
     var isComplete by remember { mutableStateOf(false) }
+    var hasReported by remember { mutableStateOf(false) }
     var timeLeft by remember { mutableIntStateOf(timerDuration) }
     var selectedAnswer by remember { mutableIntStateOf(-1) }
     var showResult by remember { mutableStateOf(false) }
@@ -98,8 +99,11 @@ fun MathDuelGame(
                 timeLeft--
             }
             isComplete = true
-            val base = score
-            onGameComplete(base, correctCount)
+            if (!hasReported) {
+                hasReported = true
+                val base = score
+                onGameComplete(base, correctCount)
+            }
         }
     }
 
@@ -226,7 +230,10 @@ fun MathDuelGame(
                     showResult = false
                     if (currentIndex >= problems.size) {
                         isComplete = true
-                        onGameComplete(score, correctCount)
+                        if (!hasReported) {
+                            hasReported = true
+                            onGameComplete(score, correctCount)
+                        }
                     }
                 }
             }

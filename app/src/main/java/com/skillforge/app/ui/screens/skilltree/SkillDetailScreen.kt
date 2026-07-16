@@ -43,7 +43,7 @@ fun SkillDetailScreen(
     }
 
     val categoryColor = Color(viewModel.getCategoryColor(skill.category))
-    val levelProgress = skill.level.toFloat() / skill.maxLevel
+    val levelProgress = if (skill.maxLevel > 0) skill.level.toFloat() / skill.maxLevel else 0f
 
     Column(
         modifier = Modifier

@@ -2,6 +2,7 @@ package com.skillforge.app.ui.screens.skilltree
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.skillforge.app.data.local.SkillForgeDatabase
 import com.skillforge.app.domain.model.Skill
 import com.skillforge.app.domain.repository.SkillRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -29,6 +30,7 @@ class SkillTreeViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
+            SkillForgeDatabase.awaitSeeding()
             skillRepository.getAllSkills().collect { skills ->
                 _uiState.value = _uiState.value.copy(skills = skills, isLoading = false)
             }

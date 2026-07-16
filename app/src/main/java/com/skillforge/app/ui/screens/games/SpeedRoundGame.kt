@@ -38,6 +38,7 @@ fun SpeedRoundGame(
     var timeLeft by remember { mutableFloatStateOf(timerDuration.toFloat()) }
     var isStarted by remember { mutableStateOf(false) }
     var isComplete by remember { mutableStateOf(false) }
+    var hasReported by remember { mutableStateOf(false) }
     var selectedAnswer by remember { mutableIntStateOf(-1) }
     var showResult by remember { mutableStateOf(false) }
     var correctCount by remember { mutableIntStateOf(0) }
@@ -50,7 +51,10 @@ fun SpeedRoundGame(
                 }
                 if (timeLeft <= 0 || currentIndex >= questions.size) {
                     isComplete = true
-                    onGameComplete(score, correctCount)
+                    if (!hasReported) {
+                        hasReported = true
+                        onGameComplete(score, correctCount)
+                    }
                 }
         }
     }
@@ -178,7 +182,13 @@ fun SpeedRoundGame(
                     currentIndex++
                     selectedAnswer = -1
                     showResult = false
-                    if (currentIndex >= questions.size) isComplete = true
+                    if (currentIndex >= questions.size) {
+                        isComplete = true
+                        if (!hasReported) {
+                            hasReported = true
+                            onGameComplete(score, correctCount)
+                        }
+                    }
                 }
             }
         }

@@ -454,7 +454,7 @@ fun SkillProgressRow(skill: Skill, color: Color, onClick: () -> Unit) {
             modifier = Modifier.padding(end = 8.dp)
         )
         LinearProgressIndicator(
-            progress = skill.level.toFloat() / skill.maxLevel,
+            progress = if (skill.maxLevel > 0) skill.level.toFloat() / skill.maxLevel else 0f,
             modifier = Modifier
                 .width(80.dp)
                 .height(6.dp)

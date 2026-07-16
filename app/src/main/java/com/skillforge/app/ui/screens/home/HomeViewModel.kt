@@ -2,6 +2,7 @@ package com.skillforge.app.ui.screens.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.skillforge.app.data.local.SkillForgeDatabase
 import com.skillforge.app.domain.model.Skill
 import com.skillforge.app.domain.model.User
 import com.skillforge.app.domain.repository.ChallengeRepository
@@ -42,6 +43,7 @@ class HomeViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
+            SkillForgeDatabase.awaitSeeding()
             userRepository.ensureUserExists()
             loadData()
         }
