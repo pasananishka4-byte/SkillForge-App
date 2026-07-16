@@ -47,6 +47,7 @@ import com.skillforge.app.ui.screens.games.CodeBreakerGame
 import com.skillforge.app.ui.screens.games.WordScrambleGame
 import com.skillforge.app.ui.screens.games.MathDuelGame
 import com.skillforge.app.ui.screens.games.VisualMemoryGame
+import com.skillforge.app.ui.screens.games.GameCompletionViewModel
 
 sealed class Screen(val route: String) {
     data object Onboarding : Screen("onboarding")
@@ -230,10 +231,11 @@ fun MainAppContent() {
                 arguments = listOf(navArgument("difficulty") { type = NavType.StringType; defaultValue = "Normal" })
             ) { backStackEntry ->
                 val diff = backStackEntry.arguments?.getString("difficulty") ?: "Normal"
+                val vm: GameCompletionViewModel = hiltViewModel()
                 MemoryMatchGame(
                     onBack = { navController.popBackStack() },
                     difficulty = diff,
-                    onGameComplete = { _, _ -> }
+                    onGameComplete = { xp, score -> vm.onGameComplete("Memory Match", xp, score) }
                 )
             }
             composable(
@@ -241,10 +243,11 @@ fun MainAppContent() {
                 arguments = listOf(navArgument("difficulty") { type = NavType.StringType; defaultValue = "Normal" })
             ) { backStackEntry ->
                 val diff = backStackEntry.arguments?.getString("difficulty") ?: "Normal"
+                val vm: GameCompletionViewModel = hiltViewModel()
                 SpeedRoundGame(
                     onBack = { navController.popBackStack() },
                     difficulty = diff,
-                    onGameComplete = { _, _ -> }
+                    onGameComplete = { xp, score -> vm.onGameComplete("Speed Round", xp, score) }
                 )
             }
             composable(
@@ -252,10 +255,11 @@ fun MainAppContent() {
                 arguments = listOf(navArgument("difficulty") { type = NavType.StringType; defaultValue = "Normal" })
             ) { backStackEntry ->
                 val diff = backStackEntry.arguments?.getString("difficulty") ?: "Normal"
+                val vm: GameCompletionViewModel = hiltViewModel()
                 PatternPuzzleGame(
                     onBack = { navController.popBackStack() },
                     difficulty = diff,
-                    onGameComplete = { _, _ -> }
+                    onGameComplete = { xp, score -> vm.onGameComplete("Pattern Puzzle", xp, score) }
                 )
             }
             composable(
@@ -263,10 +267,11 @@ fun MainAppContent() {
                 arguments = listOf(navArgument("difficulty") { type = NavType.StringType; defaultValue = "Normal" })
             ) { backStackEntry ->
                 val diff = backStackEntry.arguments?.getString("difficulty") ?: "Normal"
+                val vm: GameCompletionViewModel = hiltViewModel()
                 SimonSaysGame(
                     onBack = { navController.popBackStack() },
                     difficulty = diff,
-                    onGameComplete = { _, _ -> }
+                    onGameComplete = { xp, score -> vm.onGameComplete("Simon Says", xp, score) }
                 )
             }
             composable(
@@ -274,10 +279,11 @@ fun MainAppContent() {
                 arguments = listOf(navArgument("difficulty") { type = NavType.StringType; defaultValue = "Normal" })
             ) { backStackEntry ->
                 val diff = backStackEntry.arguments?.getString("difficulty") ?: "Normal"
+                val vm: GameCompletionViewModel = hiltViewModel()
                 CodeBreakerGame(
                     onBack = { navController.popBackStack() },
                     difficulty = diff,
-                    onGameComplete = { _, _ -> }
+                    onGameComplete = { xp, score -> vm.onGameComplete("Code Breaker", xp, score) }
                 )
             }
             composable(
@@ -285,10 +291,11 @@ fun MainAppContent() {
                 arguments = listOf(navArgument("difficulty") { type = NavType.StringType; defaultValue = "Normal" })
             ) { backStackEntry ->
                 val diff = backStackEntry.arguments?.getString("difficulty") ?: "Normal"
+                val vm: GameCompletionViewModel = hiltViewModel()
                 WordScrambleGame(
                     onBack = { navController.popBackStack() },
                     difficulty = diff,
-                    onGameComplete = { _, _ -> }
+                    onGameComplete = { xp, score -> vm.onGameComplete("Word Scramble", xp, score) }
                 )
             }
             composable(
@@ -296,10 +303,11 @@ fun MainAppContent() {
                 arguments = listOf(navArgument("difficulty") { type = NavType.StringType; defaultValue = "Normal" })
             ) { backStackEntry ->
                 val diff = backStackEntry.arguments?.getString("difficulty") ?: "Normal"
+                val vm: GameCompletionViewModel = hiltViewModel()
                 MathDuelGame(
                     onBack = { navController.popBackStack() },
                     difficulty = diff,
-                    onGameComplete = { _, _ -> }
+                    onGameComplete = { xp, score -> vm.onGameComplete("Math Duel", xp, score) }
                 )
             }
             composable(
@@ -307,10 +315,11 @@ fun MainAppContent() {
                 arguments = listOf(navArgument("difficulty") { type = NavType.StringType; defaultValue = "Normal" })
             ) { backStackEntry ->
                 val diff = backStackEntry.arguments?.getString("difficulty") ?: "Normal"
+                val vm: GameCompletionViewModel = hiltViewModel()
                 VisualMemoryGame(
                     onBack = { navController.popBackStack() },
                     difficulty = diff,
-                    onGameComplete = { _, _ -> }
+                    onGameComplete = { xp, score -> vm.onGameComplete("Visual Memory", xp, score) }
                 )
             }
         }

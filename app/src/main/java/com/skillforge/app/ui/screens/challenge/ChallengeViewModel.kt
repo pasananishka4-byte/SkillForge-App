@@ -2,6 +2,7 @@ package com.skillforge.app.ui.screens.challenge
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.skillforge.app.data.local.SkillForgeDatabase
 import com.skillforge.app.domain.model.Challenge
 import com.skillforge.app.domain.model.Skill
 import com.skillforge.app.domain.model.User
@@ -59,6 +60,7 @@ class ChallengeViewModel @Inject constructor(
 
     fun loadChallenges(skillId: Long, difficulty: String) {
         viewModelScope.launch {
+            SkillForgeDatabase.awaitSeeding()
             val challenges = if (skillId == 0L) {
                 challengeRepository.getRandomChallenges(10)
             } else {

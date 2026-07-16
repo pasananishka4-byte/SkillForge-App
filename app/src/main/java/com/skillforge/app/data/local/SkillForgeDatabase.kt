@@ -23,6 +23,8 @@ import com.skillforge.app.data.local.seed.SeedData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
 
 @Database(
     entities = [
@@ -49,6 +51,7 @@ abstract class SkillForgeDatabase : RoomDatabase() {
     companion object {
         @Volatile
         private var INSTANCE: SkillForgeDatabase? = null
+        private val seedingLatch = CountDownLatch(1)
 
         fun getDatabase(context: Context): SkillForgeDatabase {
             return INSTANCE ?: synchronized(this) {
@@ -61,7 +64,11 @@ abstract class SkillForgeDatabase : RoomDatabase() {
                         override fun onCreate(db: SupportSQLiteDatabase) {
                             super.onCreate(db)
                             CoroutineScope(Dispatchers.IO).launch {
-                                SeedData.seed(db)
+                                try {
+                                    SeedData.seed(db)
+                                } finally {
+                                    seedingLatch.countDown()
+                                }
                             }
                         }
                     })
@@ -69,6 +76,10 @@ abstract class SkillForgeDatabase : RoomDatabase() {
                 INSTANCE = instance
                 instance
             }
+        }
+
+        suspend fun awaitSeeding() {
+            seedingLatch.await(10, TimeUnit.SECONDS)
         }
     }
 }

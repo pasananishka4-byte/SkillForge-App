@@ -2,6 +2,7 @@ package com.skillforge.app.ui.screens.daily
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.skillforge.app.data.local.SkillForgeDatabase
 import com.skillforge.app.domain.model.Challenge
 import com.skillforge.app.domain.model.Skill
 import com.skillforge.app.domain.repository.ChallengeRepository
@@ -58,6 +59,7 @@ class DailyChallengeViewModel @Inject constructor(
 
     private fun loadDailyChallenges() {
         viewModelScope.launch {
+            SkillForgeDatabase.awaitSeeding()
             val completed = dailyChallengeRepository.isDailyCompleted()
             val streakDays = dailyChallengeRepository.getCompletedDaysCount()
 

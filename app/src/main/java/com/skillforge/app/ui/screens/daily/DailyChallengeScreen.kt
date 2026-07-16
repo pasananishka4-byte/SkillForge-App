@@ -110,7 +110,8 @@ fun DailyChallengeScreen(
 
         // Progress
         LinearProgressIndicator(
-            progress = uiState.currentChallengeIndex.toFloat() / uiState.challenges.size,
+            progress = if (uiState.challenges.isNotEmpty())
+                uiState.currentChallengeIndex.toFloat() / uiState.challenges.size else 0f,
             modifier = Modifier.fillMaxWidth().height(4.dp),
             color = StreakFire, trackColor = SurfaceVariant,
         )
