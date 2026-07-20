@@ -85,6 +85,18 @@ sealed class Screen(val route: String) {
     object GameVisualMemory : Screen("game_visual_memory?difficulty={difficulty}") {
         fun createRoute(difficulty: String = "easy") = "game_visual_memory?difficulty=$difficulty"
     }
+    object GameTicTacToe : Screen("game_tic_tac_toe?difficulty={difficulty}") {
+        fun createRoute(difficulty: String = "easy") = "game_tic_tac_toe?difficulty=$difficulty"
+    }
+    object GameColorMatch : Screen("game_color_match?difficulty={difficulty}") {
+        fun createRoute(difficulty: String = "easy") = "game_color_match?difficulty=$difficulty"
+    }
+    object GameHangman : Screen("game_hangman?difficulty={difficulty}") {
+        fun createRoute(difficulty: String = "easy") = "game_hangman?difficulty=$difficulty"
+    }
+    object GameReactionTime : Screen("game_reaction_time?difficulty={difficulty}") {
+        fun createRoute(difficulty: String = "easy") = "game_reaction_time?difficulty=$difficulty"
+    }
 }
 
 data class BottomNavItem(
@@ -296,6 +308,46 @@ fun SkillForgeApp() {
                 ) { backStackEntry ->
                     val difficulty = backStackEntry.arguments?.getString("difficulty") ?: "easy"
                     GameVisualMemoryScreen(difficulty = difficulty, navController = navController)
+                }
+                composable(
+                    route = Screen.GameTicTacToe.route,
+                    arguments = listOf(navArgument("difficulty") {
+                        type = NavType.StringType
+                        defaultValue = "easy"
+                    })
+                ) { backStackEntry ->
+                    val difficulty = backStackEntry.arguments?.getString("difficulty") ?: "easy"
+                    GameTicTacToeScreen(difficulty = difficulty, navController = navController)
+                }
+                composable(
+                    route = Screen.GameColorMatch.route,
+                    arguments = listOf(navArgument("difficulty") {
+                        type = NavType.StringType
+                        defaultValue = "easy"
+                    })
+                ) { backStackEntry ->
+                    val difficulty = backStackEntry.arguments?.getString("difficulty") ?: "easy"
+                    GameColorMatchScreen(difficulty = difficulty, navController = navController)
+                }
+                composable(
+                    route = Screen.GameHangman.route,
+                    arguments = listOf(navArgument("difficulty") {
+                        type = NavType.StringType
+                        defaultValue = "easy"
+                    })
+                ) { backStackEntry ->
+                    val difficulty = backStackEntry.arguments?.getString("difficulty") ?: "easy"
+                    GameHangmanScreen(difficulty = difficulty, navController = navController)
+                }
+                composable(
+                    route = Screen.GameReactionTime.route,
+                    arguments = listOf(navArgument("difficulty") {
+                        type = NavType.StringType
+                        defaultValue = "easy"
+                    })
+                ) { backStackEntry ->
+                    val difficulty = backStackEntry.arguments?.getString("difficulty") ?: "easy"
+                    GameReactionTimeScreen(difficulty = difficulty, navController = navController)
                 }
             }
         }

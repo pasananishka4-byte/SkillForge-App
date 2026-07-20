@@ -1,68 +1,34 @@
-@file:OptIn(ExperimentalMaterial3Api::class)
-
 package com.skillforge.app.ui.screens
 
-import androidx.compose.foundation.BorderStroke
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilterChip
-import androidx.compose.material3.FilterChipDefaults
-import androidx.compose.material3.LinearProgressIndicator
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.skillforge.app.data.SkillWithProgress
+import com.skillforge.app.data.SoundManager
 import com.skillforge.app.data.xpForCurrentLevel
 import com.skillforge.app.data.xpForNextLevel
 import com.skillforge.app.ui.AppStorage
 import com.skillforge.app.ui.Screen
-import com.skillforge.app.ui.theme.Background
-import com.skillforge.app.ui.theme.CriticalThinkingColor
-import com.skillforge.app.ui.theme.EasyColor
-import com.skillforge.app.ui.theme.GeneralKnowledgeColor
-import com.skillforge.app.ui.theme.HardColor
-import com.skillforge.app.ui.theme.MediumColor
-import com.skillforge.app.ui.theme.MetaLearningColor
-import com.skillforge.app.ui.theme.OnBackground
-import com.skillforge.app.ui.theme.OnSurface
-import com.skillforge.app.ui.theme.OnSurfaceVariant
-import com.skillforge.app.ui.theme.Primary
-import com.skillforge.app.ui.theme.SocialEmotionalColor
-import com.skillforge.app.ui.theme.Surface
-import com.skillforge.app.ui.theme.SurfaceVariant
+import com.skillforge.app.ui.components.GradientBackground
+import com.skillforge.app.ui.components.PremiumCard
+import com.skillforge.app.ui.components.SoundToggleButton
+import com.skillforge.app.ui.theme.*
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.unit.sp
 
 private enum class CategoryFilter(val label: String) {
     ALL("All"),
@@ -76,13 +42,10 @@ private enum class CategoryFilter(val label: String) {
 @Composable
 fun SkillTreeScreen(navController: NavHostController) {
     val storage = AppStorage.storage
-
     var allSkills by remember { mutableStateOf<List<SkillWithProgress>>(emptyList()) }
     var selectedCategory by remember { mutableStateOf(CategoryFilter.ALL) }
 
-    LaunchedEffect(Unit) {
-        allSkills = storage.getSkills()
-    }
+    LaunchedEffect(Unit) { allSkills = storage.getSkills() }
 
     val filteredSkills = remember(allSkills, selectedCategory) {
         when (selectedCategory) {
@@ -98,50 +61,41 @@ fun SkillTreeScreen(navController: NavHostController) {
             }
             CategoryFilter.SOCIAL_EMOTIONAL -> allSkills.filter { s ->
                 s.category.equals("Social/Emotional", ignoreCase = true) ||
-                        s.category.equals("SocialEmotional", ignoreCase = true) ||
-                        s.category.equals("Social Emotional", ignoreCase = true)
+                    s.category.equals("SocialEmotional", ignoreCase = true) ||
+                    s.category.equals("Social Emotional", ignoreCase = true)
             }
         }
     }
 
-    Scaffold(
-        containerColor = Background,
-        topBar = {
-            TopAppBar(
-                title = { Text("Your Skills", fontWeight = FontWeight.Bold) },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Background,
-                    titleContentColor = OnBackground
+    GradientBackground {
+        Scaffold(
+            containerColor = Color.Transparent,
+            topBar = {
+                TopAppBar(
+                    title = { Text("Your Skills", fontWeight = FontWeight.Bold) },
+                    actions = { SoundToggleButton() },
+                    colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent, titleContentColor = OnBackground)
                 )
-            )
-        }
-    ) { padding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-        ) {
-            CategoryFilterChips(
-                selectedCategory = selectedCategory,
-                onCategorySelected = { selectedCategory = it }
-            )
+            }
+        ) { padding ->
+            Column(modifier = Modifier.fillMaxSize().padding(padding)) {
+                CategoryFilterChips(selectedCategory, onCategorySelected = { selectedCategory = it })
 
-            Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(8.dp))
 
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(2),
-                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp),
-                modifier = Modifier.fillMaxSize()
-            ) {
-                items(filteredSkills, key = { it.id }) { skill ->
-                    SkillCard(
-                        skill = skill,
-                        onClick = {
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(2),
+                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    items(filteredSkills, key = { it.id }) { skill ->
+                        SkillCard(skill = skill, onClick = {
+                            SoundManager.playTap()
                             navController.navigate(Screen.SkillDetail.createRoute(skill.id.toString()))
-                        }
-                    )
+                        })
+                    }
                 }
             }
         }
@@ -149,36 +103,37 @@ fun SkillTreeScreen(navController: NavHostController) {
 }
 
 @Composable
-private fun CategoryFilterChips(
-    selectedCategory: CategoryFilter,
-    onCategorySelected: (CategoryFilter) -> Unit
-) {
-    val categories = CategoryFilter.entries
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 4.dp)
+private fun CategoryFilterChips(selectedCategory: CategoryFilter, onCategorySelected: (CategoryFilter) -> Unit) {
+    Row(
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        item {
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier.fillMaxWidth()
+        CategoryFilter.entries.forEach { category ->
+            val isSelected = selectedCategory == category
+            val bgColor = if (isSelected) Primary else Primary.copy(alpha = 0.15f)
+            val txtColor = if (isSelected) OnPrimary else Primary
+            Box(
+                modifier = Modifier
+                    .clip(MaterialTheme.shapes.small)
+                    .clickable {
+                        SoundManager.playTap()
+                        onCategorySelected(category)
+                    }
+                    .then(
+                        if (isSelected) Modifier else Modifier
+                    )
             ) {
-                categories.forEach { category ->
-                    FilterChip(
-                        selected = selectedCategory == category,
-                        onClick = { onCategorySelected(category) },
-                        label = {
-                            Text(
-                                text = category.label,
-                                style = MaterialTheme.typography.labelMedium,
-                                maxLines = 1
-                            )
-                        },
-                        colors = FilterChipDefaults.filterChipColors(
-                            containerColor = Primary.copy(alpha = 0.2f),
-                            labelColor = Primary
-                        )
+                Surface(
+                    color = bgColor,
+                    shape = MaterialTheme.shapes.small
+                ) {
+                    Text(
+                        text = category.label,
+                        style = MaterialTheme.typography.labelMedium,
+                        color = txtColor,
+                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                        modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp),
+                        maxLines = 1
                     )
                 }
             }
@@ -195,74 +150,47 @@ private fun SkillCard(skill: SkillWithProgress, onClick: () -> Unit) {
         (skill.progress.currentXP - currentLevelXp).toFloat() / (nextLevelXp - currentLevelXp).toFloat()
     } else 0f
 
-    val categoryColor = rememberCategoryColor(skill.category)
+    val catColor = rememberCategoryColor(skill.category)
 
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick),
-        colors = CardDefaults.cardColors(containerColor = Surface),
-        shape = RoundedCornerShape(16.dp),
-        border = BorderStroke(1.dp, categoryColor.copy(alpha = 0.5f))
+    PremiumCard(
+        onClick = onClick,
+        gradient = Brush.verticalGradient(
+            listOf(catColor.copy(alpha = 0.12f), Color.Transparent)
+        )
     ) {
-        Column(
-            modifier = Modifier.padding(12.dp)
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(
-                    text = skill.icon,
-                    style = MaterialTheme.typography.headlineMedium
-                )
-                Spacer(modifier = Modifier.width(8.dp))
+        Column(modifier = Modifier.padding(14.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Box(
+                    modifier = Modifier.size(40.dp).clip(MaterialTheme.shapes.small),
+                    contentAlignment = Alignment.Center
+                ) {
+                    androidx.compose.foundation.Canvas(modifier = Modifier.fillMaxSize()) {
+                        drawRoundRect(color = catColor.copy(alpha = 0.25f))
+                    }
+                    Text(text = skill.icon, fontSize = 20.sp)
+                }
+                Spacer(modifier = Modifier.width(10.dp))
                 Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = skill.name,
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = OnSurface,
-                        fontWeight = FontWeight.SemiBold,
-                        maxLines = 1
-                    )
-                    CategoryBadge(skill.category, categoryColor)
+                    Text(skill.name, style = MaterialTheme.typography.bodyMedium, color = OnSurface, fontWeight = FontWeight.SemiBold, maxLines = 1)
+                    Text(skill.category, style = MaterialTheme.typography.labelSmall, color = catColor)
                 }
             }
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = "Level $skillLevel",
-                style = MaterialTheme.typography.titleSmall,
-                color = OnSurfaceVariant,
-                fontWeight = FontWeight.Medium
-            )
+            Spacer(modifier = Modifier.height(10.dp))
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                Text("Level $skillLevel", style = MaterialTheme.typography.labelMedium, color = OnSurfaceVariant, fontWeight = FontWeight.Medium)
+                Text("${skill.progress.currentXP} XP", style = MaterialTheme.typography.labelSmall, color = OnSurfaceLow)
+            }
             Spacer(modifier = Modifier.height(6.dp))
-            LinearProgressIndicator(
-                progress = progress.coerceIn(0f, 1f),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(8.dp)
-                    .clip(RoundedCornerShape(4.dp)),
-                color = categoryColor,
-                trackColor = SurfaceVariant,
-            )
+            Box(modifier = Modifier.fillMaxWidth().height(6.dp).clip(RoundedCornerShape(3.dp))) {
+                LinearProgressIndicator(
+                    progress = progress.coerceIn(0f, 1f),
+                    modifier = Modifier.fillMaxSize(),
+                    color = catColor,
+                    trackColor = SurfaceVariant,
+                    strokeCap = StrokeCap.Round
+                )
+            }
         }
-    }
-}
-
-@Composable
-private fun CategoryBadge(category: String, color: Color) {
-    Card(
-        colors = CardDefaults.cardColors(containerColor = color.copy(alpha = 0.15f)),
-        shape = RoundedCornerShape(6.dp)
-    ) {
-        Text(
-            text = category,
-            style = MaterialTheme.typography.labelSmall,
-            color = color,
-            fontWeight = FontWeight.Medium,
-            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
-            maxLines = 1
-        )
     }
 }
 
@@ -273,10 +201,7 @@ private fun rememberCategoryColor(category: String): Color {
             "criticalthinking" -> CriticalThinkingColor
             "generalknowledge" -> GeneralKnowledgeColor
             "metalearning", "meta-learning" -> MetaLearningColor
-            "socialemotional", "social/emotional", "socialemotional" -> SocialEmotionalColor
-            "easy" -> EasyColor
-            "medium" -> MediumColor
-            "hard" -> HardColor
+            "socialemotional", "social/emotional" -> SocialEmotionalColor
             else -> Primary
         }
     }
