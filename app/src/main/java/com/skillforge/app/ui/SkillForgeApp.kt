@@ -37,13 +37,13 @@ import com.skillforge.app.ui.theme.Surface
 import com.skillforge.app.ui.theme.SkillForgeTheme
 import com.skillforge.app.ui.screens.*
 import com.skillforge.app.ui.screens.games.*
-import com.skillforge.app.ui.screens.games.*
 
 object AppStorage {
     lateinit var storage: LocalStorage
 }
 
 sealed class Screen(val route: String) {
+    object Onboarding : Screen("onboarding")
     object Home : Screen("home")
     object SkillTree : Screen("skill_tree")
     object Analytics : Screen("analytics")
@@ -107,6 +107,14 @@ fun SkillForgeApp() {
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentRoute = navBackStackEntry?.destination?.route
 
+        LaunchedEffect(Unit) {
+            if (!AppStorage.storage.isOnboardingComplete()) {
+                navController.navigate(Screen.Onboarding.route) {
+                    popUpTo(0) { inclusive = true }
+                }
+            }
+        }
+
         val showBottomBar = currentRoute in bottomNavItems.map { it.route }
 
         Scaffold(
@@ -151,12 +159,15 @@ fun SkillForgeApp() {
                     }
                 }
             }
-        ) { paddingValues ->
+            ) { paddingValues ->
             NavHost(
                 navController = navController,
                 startDestination = Screen.Home.route,
                 modifier = Modifier.padding(paddingValues)
             ) {
+                composable(Screen.Onboarding.route) {
+                    OnboardingScreen(navController = navController)
+                }
                 composable(Screen.Home.route) {
                     HomeScreen(navController = navController)
                 }
