@@ -4,209 +4,106 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
+import androidx.navigation.NavHostController
+import com.skillforge.app.ui.AppStorage
 import com.skillforge.app.ui.Screen
 import com.skillforge.app.ui.theme.*
 
-data class GameInfo(
+data class GameCard(
     val name: String,
+    val icon: String,
     val description: String,
-    val icon: ImageVector,
-    val color: Color,
-    val route: String,
-    val skill: String,
-    val category: String
-)
-
-val availableGames = listOf(
-    GameInfo("Memory Match", "Flip cards and find matching pairs", Icons.Filled.GridOn, Secondary, "game_memory_match", "Memory", "Meta-Learning"),
-    GameInfo("Speed Round", "Answer questions in 30 seconds", Icons.Filled.Bolt, StreakFire, "game_speed_round", "GK Speed", "General Knowledge"),
-    GameInfo("Pattern Puzzle", "Find the pattern, predict next", Icons.Filled.Psychology, CriticalThinkingColor, "game_pattern_puzzle", "Logic", "Critical Thinking"),
-    GameInfo("Simon Says", "Watch and repeat the sequence", Icons.Filled.VideogameAsset, GeneralKnowledgeColor, "game_simon_says", "Focus", "Meta-Learning"),
-    GameInfo("Code Breaker", "Crack the secret color code", Icons.Filled.Lock, ExpertColor, "game_code_breaker", "Logic", "Critical Thinking"),
-    GameInfo("Word Scramble", "Unscramble letters to form words", Icons.Filled.Create, GeneralKnowledgeColor, "game_word_scramble", "Vocabulary", "General Knowledge"),
-    GameInfo("Math Duel", "Solve math problems against time", Icons.Filled.Calculate, MetaLearningColor, "game_math_duel", "Math", "General Knowledge"),
-    GameInfo("Visual Memory", "Remember tile positions on a grid", Icons.Filled.Visibility, SocialEmotionalColor, "game_visual_memory", "Memory", "Meta-Learning")
+    val route: String
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun GamesHubScreen(
-    navController: NavController
-) {
-    var selectedDifficulty by remember { mutableStateOf("Normal") }
-    val difficulties = listOf("Easy", "Normal", "Hard")
+fun GamesHubScreen(navController: NavHostController) {
+    var difficulty by remember { mutableStateOf("easy") }
+    val stats = remember { AppStorage.storage.getGameStats() }
 
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(2),
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Background)
-            .padding(16.dp),
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
-        contentPadding = PaddingValues(bottom = 16.dp)
-    ) {
-        item(span = { GridItemSpan(2) }) {
-            Column {
-                Text("Mini Games", style = MaterialTheme.typography.headlineLarge, color = Primary)
-                Text("Fun games to boost your skills", style = MaterialTheme.typography.bodyMedium, color = OnSurfaceVariant)
-                Spacer(Modifier.height(8.dp))
-            }
-        }
+    val games = listOf(
+        GameCard("Memory Match", "🧠", "Find matching pairs of cards", Screen.GameMemoryMatch.createRoute(difficulty)),
+        GameCard("Speed Round", "⚡", "Answer as many questions as you can", Screen.GameSpeedRound.createRoute(difficulty)),
+        GameCard("Pattern Puzzle", "🔮", "Remember and recreate the pattern", Screen.GamePatternPuzzle.createRoute(difficulty)),
+        GameCard("Simon Says", "🎵", "Repeat the color sequence", Screen.GameSimonSays.createRoute(difficulty)),
+        GameCard("Code Breaker", "🔓", "Crack the secret code", Screen.GameCodeBreaker.createRoute(difficulty)),
+        GameCard("Word Scramble", "📝", "Unscramble the letters", Screen.GameWordScramble.createRoute(difficulty)),
+        GameCard("Math Duel", "🧮", "Solve math problems fast", Screen.GameMathDuel.createRoute(difficulty)),
+        GameCard("Visual Memory", "👁️", "Remember lit tile positions", Screen.GameVisualMemory.createRoute(difficulty))
+    )
 
-        item(span = { GridItemSpan(2) }) {
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(containerColor = Surface),
-                shape = RoundedCornerShape(16.dp)
-            ) {
-                Row(
-                    modifier = Modifier.padding(16.dp).fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly
-                ) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text("${availableGames.size}", style = MaterialTheme.typography.headlineSmall, color = Primary, fontWeight = FontWeight.Bold)
-                        Text("Games", style = MaterialTheme.typography.labelSmall, color = OnSurfaceVariant)
-                    }
+    Column(modifier = Modifier.fillMaxSize()) {
+        TopAppBar(
+            title = { Text("Games") },
+            navigationIcon = {
+                IconButton(onClick = { navController.popBackStack() }) {
+                    Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
                 }
-            }
-        }
+            },
+            colors = TopAppBarDefaults.topAppBarColors(containerColor = Surface, titleContentColor = OnBackground)
+        )
 
-        item(span = { GridItemSpan(2) }) {
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(containerColor = Surface),
-                shape = RoundedCornerShape(12.dp)
-            ) {
-                Row(
-                    modifier = Modifier.padding(8.dp).fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    difficulties.forEach { diff ->
-                        val isSelected = diff == selectedDifficulty
-                        val diffColor = when (diff) {
-                            "Easy" -> EasyColor
-                            "Hard" -> HardColor
-                            else -> MediumColor
-                        }
-                        Surface(
-                            modifier = Modifier.weight(1f).clickable {
-                                selectedDifficulty = diff
-                            },
-                            shape = RoundedCornerShape(8.dp),
-                            color = if (isSelected) diffColor.copy(alpha = 0.2f) else Color.Transparent
-                        ) {
-                            Text(
-                                diff,
-                                style = MaterialTheme.typography.labelMedium,
-                                color = if (isSelected) diffColor else OnSurfaceVariant,
-                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-                                textAlign = TextAlign.Center,
-                                modifier = Modifier.padding(vertical = 10.dp)
-                            )
-                        }
-                    }
-                }
-            }
-        }
-
-        item(span = { GridItemSpan(2) }) {
-            Text("Logic & Strategy", style = MaterialTheme.typography.titleMedium, color = OnSurface, modifier = Modifier.padding(top = 4.dp))
-        }
-
-        val logicGames = availableGames.filter { it.category == "Critical Thinking" }
-        items(logicGames.size) { idx ->
-            val game = logicGames[idx]
-            GameCard(game = game, onClick = {
-                navController.navigate("${game.route}?difficulty=$selectedDifficulty")
-            })
-        }
-
-        item(span = { GridItemSpan(2) }) {
-            Text("Knowledge & Speed", style = MaterialTheme.typography.titleMedium, color = OnSurface, modifier = Modifier.padding(top = 4.dp))
-        }
-
-        val knowledgeGames = availableGames.filter { it.category == "General Knowledge" }
-        items(knowledgeGames.size) { idx ->
-            val game = knowledgeGames[idx]
-            GameCard(game = game, onClick = {
-                navController.navigate("${game.route}?difficulty=$selectedDifficulty")
-            })
-        }
-
-        item(span = { GridItemSpan(2) }) {
-            Text("Memory & Focus", style = MaterialTheme.typography.titleMedium, color = OnSurface, modifier = Modifier.padding(top = 4.dp))
-        }
-
-        val memoryGames = availableGames.filter { it.category == "Meta-Learning" || it.category == "Social/Emotional" }
-        items(memoryGames.size) { idx ->
-            val game = memoryGames[idx]
-            GameCard(game = game, onClick = {
-                navController.navigate("${game.route}?difficulty=$selectedDifficulty")
-            })
-        }
-
-        item(span = { GridItemSpan(2) }) { Spacer(Modifier.height(8.dp)) }
-    }
-}
-
-@Composable
-fun GameCard(game: GameInfo, onClick: () -> Unit) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(190.dp)
-            .clickable(onClick = onClick),
-        colors = CardDefaults.cardColors(containerColor = Surface),
-        shape = RoundedCornerShape(16.dp)
-    ) {
-        Column(
-            modifier = Modifier.padding(14.dp).fillMaxSize(),
-            verticalArrangement = Arrangement.SpaceBetween
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            Box(
-                modifier = Modifier
-                    .size(42.dp)
-                    .clip(RoundedCornerShape(10.dp))
-                    .background(game.color.copy(alpha = 0.15f)),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(game.icon, null, tint = game.color, modifier = Modifier.size(24.dp))
+            listOf("easy", "medium", "hard").forEach { d ->
+                FilterChip(
+                    selected = difficulty == d,
+                    onClick = { difficulty = d },
+                    label = { Text(d.replaceFirstChar { it.uppercase() }) },
+                    colors = FilterChipDefaults.filterChipColors(
+                        selectedContainerColor = when(d) { "easy" -> EasyColor; "medium" -> MediumColor; "hard" -> HardColor; else -> Primary },
+                        selectedLabelColor = OnPrimary
+                    )
+                )
             }
+        }
 
-            Column {
-                Text(game.name, style = MaterialTheme.typography.titleSmall, color = OnSurface, fontWeight = FontWeight.Bold, maxLines = 1)
-                Text(game.description, style = MaterialTheme.typography.bodySmall, color = OnSurfaceVariant, lineHeight = 14.sp, maxLines = 2)
-            }
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(2),
+            contentPadding = PaddingValues(16.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            items(games) { game ->
+                val gameKey = game.name.lowercase().replace(" ", "_")
+                val gameStats = stats[gameKey]
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Surface(
-                    shape = RoundedCornerShape(6.dp),
-                    color = game.color.copy(alpha = 0.1f)
+                Card(
+                    modifier = Modifier.fillMaxWidth().clickable { navController.navigate(game.route) },
+                    colors = CardDefaults.cardColors(containerColor = Surface),
+                    shape = RoundedCornerShape(12.dp)
                 ) {
-                    Text(game.skill, style = MaterialTheme.typography.labelSmall, color = game.color, modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp))
+                    Column(modifier = Modifier.padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text(text = game.icon, fontSize = 32.sp)
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(text = game.name, color = OnBackground, fontWeight = FontWeight.Bold, fontSize = 14.sp, textAlign = TextAlign.Center)
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(text = game.description, color = OnSurfaceVariant, fontSize = 11.sp, textAlign = TextAlign.Center)
+                        Spacer(modifier = Modifier.height(8.dp))
+                        if (gameStats != null) {
+                            Text(text = "Best: ${gameStats.bestScore}", color = Primary, fontSize = 12.sp)
+                            Text(text = "Played: ${gameStats.gamesPlayed}", color = OnSurfaceVariant, fontSize = 10.sp)
+                        } else {
+                            Text(text = "Tap to play!", color = OnSurfaceVariant, fontSize = 11.sp)
+                        }
+                    }
                 }
             }
         }

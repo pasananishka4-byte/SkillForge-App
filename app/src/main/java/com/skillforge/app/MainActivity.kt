@@ -3,19 +3,19 @@ package com.skillforge.app
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import com.skillforge.app.ui.SkillForgeApp
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import com.skillforge.app.ui.theme.SkillForgeTheme
-import dagger.hilt.android.AndroidEntryPoint
+import com.skillforge.app.ui.SkillForgeApp
 
-@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContent {
             SkillForgeTheme {
-                SkillForgeApp()
+                Surface(color = MaterialTheme.colorScheme.background) {
+                    SkillForgeApp()
+                }
             }
         }
     }
