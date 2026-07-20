@@ -97,6 +97,13 @@ sealed class Screen(val route: String) {
     object GameReactionTime : Screen("game_reaction_time?difficulty={difficulty}") {
         fun createRoute(difficulty: String = "easy") = "game_reaction_time?difficulty=$difficulty"
     }
+    object GameDualNBack : Screen("game_dual_n_back?difficulty={difficulty}") {
+        fun createRoute(difficulty: String = "easy") = "game_dual_n_back?difficulty=$difficulty"
+    }
+    object GameTriviaSprint : Screen("game_trivia_sprint?difficulty={difficulty}") {
+        fun createRoute(difficulty: String = "easy") = "game_trivia_sprint?difficulty=$difficulty"
+    }
+    object MetaLearning : Screen("meta_learning")
 }
 
 data class BottomNavItem(
@@ -228,6 +235,9 @@ fun SkillForgeApp() {
                 composable(Screen.GamesHub.route) {
                     GamesHubScreen(navController = navController)
                 }
+                composable(Screen.MetaLearning.route) {
+                    MetaLearningScreen(navController = navController)
+                }
 
                 composable(
                     route = Screen.GameMemoryMatch.route,
@@ -348,6 +358,26 @@ fun SkillForgeApp() {
                 ) { backStackEntry ->
                     val difficulty = backStackEntry.arguments?.getString("difficulty") ?: "easy"
                     GameReactionTimeScreen(difficulty = difficulty, navController = navController)
+                }
+                composable(
+                    route = Screen.GameDualNBack.route,
+                    arguments = listOf(navArgument("difficulty") {
+                        type = NavType.StringType
+                        defaultValue = "easy"
+                    })
+                ) { backStackEntry ->
+                    val difficulty = backStackEntry.arguments?.getString("difficulty") ?: "easy"
+                    GameDualNBackScreen(difficulty = difficulty, navController = navController)
+                }
+                composable(
+                    route = Screen.GameTriviaSprint.route,
+                    arguments = listOf(navArgument("difficulty") {
+                        type = NavType.StringType
+                        defaultValue = "easy"
+                    })
+                ) { backStackEntry ->
+                    val difficulty = backStackEntry.arguments?.getString("difficulty") ?: "easy"
+                    GameTriviaSprintScreen(difficulty = difficulty, navController = navController)
                 }
             }
         }

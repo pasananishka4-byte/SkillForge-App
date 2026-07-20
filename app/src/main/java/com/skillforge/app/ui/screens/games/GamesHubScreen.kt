@@ -53,7 +53,10 @@ fun GamesHubScreen(navController: NavHostController) {
         GameCard("Tic Tac Toe", "❌", "Play vs AI", Screen.GameTicTacToe.createRoute(difficulty), "Executive Control", ExecutiveControlColor),
         GameCard("Color Match", "🎨", "Stroop test", Screen.GameColorMatch.createRoute(difficulty), "Attentional Control", AttentionalControlColor),
         GameCard("Hangman", "💀", "Guess the word", Screen.GameHangman.createRoute(difficulty), "Executive Control", ExecutiveControlColor),
-        GameCard("Reaction Time", "🏃", "Tap to react", Screen.GameReactionTime.createRoute(difficulty), "Processing Speed", ProcessingSpeedColor)
+        GameCard("Reaction Time", "🏃", "Tap to react", Screen.GameReactionTime.createRoute(difficulty), "Processing Speed", ProcessingSpeedColor),
+        GameCard("Dual N-Back", "🎯", "Gold-standard WM training", Screen.GameDualNBack.createRoute(difficulty), "Working Memory", WorkingMemoryColor),
+        GameCard("Trivia Sprint", "⚡", "Speed trivia challenge", Screen.GameTriviaSprint.createRoute(difficulty), "Processing Speed", ProcessingSpeedColor),
+        GameCard("Meta-Learning", "📖", "Learn how to learn", Screen.MetaLearning.route, "Executive Control", ExecutiveControlColor)
     )
 
     GradientBackground {
