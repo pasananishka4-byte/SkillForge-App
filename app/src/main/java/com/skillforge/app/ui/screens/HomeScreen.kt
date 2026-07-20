@@ -113,7 +113,7 @@ fun HomeScreen(navController: NavHostController) {
 
                 GreetingSection(userName, userLevel, glowAlpha)
                 XpProgressBar(userXp, userLevel)
-                StreakDisplay(streak)
+                StreakDisplay(streak, animateIn = true, animateDelayMs = 100)
                 TodayChallengesSection(todayChallenges, navController)
                 YourSkillsSection(topSkills, navController)
                 QuickGamesSection(navController)
@@ -226,8 +226,8 @@ private fun XpProgressBar(currentXp: Long, level: Int) {
 }
 
 @Composable
-private fun StreakDisplay(streak: Int) {
-    PremiumCard(onClick = { SoundManager.playTap() }) {
+private fun StreakDisplay(streak: Int, animateIn: Boolean = false, animateDelayMs: Int = 0) {
+    PremiumCard(animateIn = animateIn, animateDelayMs = animateDelayMs, onClick = { SoundManager.playTap() }) {
         Row(
             modifier = Modifier.fillMaxWidth().padding(14.dp),
             verticalAlignment = Alignment.CenterVertically,

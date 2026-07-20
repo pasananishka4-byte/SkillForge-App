@@ -1,5 +1,10 @@
 package com.skillforge.app.ui
 
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -19,7 +24,16 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -112,6 +126,13 @@ data class BottomNavItem(
     val route: String
 )
 
+private val navAnimDuration = 300
+
+private fun navEnter() = slideInHorizontally(tween(navAnimDuration)) { it / 4 } + fadeIn(tween(navAnimDuration))
+private fun navExit() = slideOutHorizontally(tween(navAnimDuration)) { -it / 6 } + fadeOut(tween(navAnimDuration / 2))
+private fun navPopEnter() = slideInHorizontally(tween(navAnimDuration)) { -it / 4 } + fadeIn(tween(navAnimDuration))
+private fun navPopExit() = slideOutHorizontally(tween(navAnimDuration)) { it / 6 } + fadeOut(tween(navAnimDuration / 2))
+
 val bottomNavItems = listOf(
     BottomNavItem("Home", Icons.Filled.Home, Screen.Home.route),
     BottomNavItem("Skills", Icons.Filled.Widgets, Screen.SkillTree.route),
@@ -146,6 +167,10 @@ fun SkillForgeApp() {
                     ) {
                         bottomNavItems.forEach { item ->
                             val selected = currentRoute == item.route
+                            val iconScale by animateFloatAsState(
+                                targetValue = if (selected) 1.15f else 1f,
+                                animationSpec = tween(200), label = "navScale"
+                            )
                             NavigationBarItem(
                                 selected = selected,
                                 onClick = {
@@ -160,10 +185,22 @@ fun SkillForgeApp() {
                                     }
                                 },
                                 icon = {
-                                    Icon(
-                                        imageVector = item.icon,
-                                        contentDescription = item.label
-                                    )
+                                    Box(modifier = Modifier.scale(iconScale)) {
+                                        Icon(
+                                            imageVector = item.icon,
+                                            contentDescription = item.label
+                                        )
+                                        if (selected) {
+                                            Box(
+                                                modifier = Modifier
+                                                    .align(Alignment.BottomCenter)
+                                                    .offset(y = 12.dp)
+                                                    .size(4.dp)
+                                                    .clip(androidx.compose.foundation.shape.CircleShape)
+                                                    .background(Primary)
+                                            )
+                                        }
+                                    }
                                 },
                                 label = { Text(item.label) },
                                 colors = NavigationBarItemDefaults.colors(
@@ -184,19 +221,44 @@ fun SkillForgeApp() {
                 startDestination = Screen.Home.route,
                 modifier = Modifier.padding(paddingValues)
             ) {
-                composable(Screen.Onboarding.route) {
+                composable(Screen.Onboarding.route,
+                    enterTransition = { fadeIn(tween(600)) + slideInHorizontally(tween(600)) { it } },
+                    exitTransition = { fadeOut(tween(300)) },
+                    popEnterTransition = { fadeIn(tween(300)) },
+                    popExitTransition = { fadeOut(tween(300)) }
+                ) {
                     OnboardingScreen(navController = navController)
                 }
-                composable(Screen.Home.route) {
+                composable(Screen.Home.route,
+                    enterTransition = { navEnter() },
+                    exitTransition = { navExit() },
+                    popEnterTransition = { navPopEnter() },
+                    popExitTransition = { navPopExit() }
+                ) {
                     HomeScreen(navController = navController)
                 }
-                composable(Screen.SkillTree.route) {
+                composable(Screen.SkillTree.route,
+                    enterTransition = { navEnter() },
+                    exitTransition = { navExit() },
+                    popEnterTransition = { navPopEnter() },
+                    popExitTransition = { navPopExit() }
+                ) {
                     SkillTreeScreen(navController = navController)
                 }
-                composable(Screen.Analytics.route) {
+                composable(Screen.Analytics.route,
+                    enterTransition = { navEnter() },
+                    exitTransition = { navExit() },
+                    popEnterTransition = { navPopEnter() },
+                    popExitTransition = { navPopExit() }
+                ) {
                     AnalyticsScreen(navController = navController)
                 }
-                composable(Screen.Profile.route) {
+                composable(Screen.Profile.route,
+                    enterTransition = { navEnter() },
+                    exitTransition = { navExit() },
+                    popEnterTransition = { navPopEnter() },
+                    popExitTransition = { navPopExit() }
+                ) {
                     ProfileScreen(navController = navController)
                 }
 
@@ -209,6 +271,10 @@ fun SkillForgeApp() {
                 }
                 composable(
                     route = Screen.Challenge.route,
+                    enterTransition = { navEnter() },
+                    exitTransition = { navExit() },
+                    popEnterTransition = { navPopEnter() },
+                    popExitTransition = { navPopExit() },
                     arguments = listOf(
                         navArgument("skillId") { type = NavType.StringType },
                         navArgument("difficulty") { type = NavType.StringType }
@@ -224,23 +290,46 @@ fun SkillForgeApp() {
                 }
                 composable(
                     route = Screen.SkillDetail.route,
+                    enterTransition = { navEnter() },
+                    exitTransition = { navExit() },
+                    popEnterTransition = { navPopEnter() },
+                    popExitTransition = { navPopExit() },
                     arguments = listOf(navArgument("skillId") { type = NavType.StringType })
                 ) { backStackEntry ->
                     val skillId = backStackEntry.arguments?.getString("skillId") ?: ""
                     SkillDetailScreen(skillId = skillId, navController = navController)
                 }
-                composable(Screen.DailyChallenge.route) {
+                composable(Screen.DailyChallenge.route,
+                    enterTransition = { navEnter() },
+                    exitTransition = { navExit() },
+                    popEnterTransition = { navPopEnter() },
+                    popExitTransition = { navPopExit() }
+                ) {
                     DailyChallengeScreen(navController = navController)
                 }
-                composable(Screen.GamesHub.route) {
+                composable(Screen.GamesHub.route,
+                    enterTransition = { navEnter() },
+                    exitTransition = { navExit() },
+                    popEnterTransition = { navPopEnter() },
+                    popExitTransition = { navPopExit() }
+                ) {
                     GamesHubScreen(navController = navController)
                 }
-                composable(Screen.MetaLearning.route) {
+                composable(Screen.MetaLearning.route,
+                    enterTransition = { navEnter() },
+                    exitTransition = { navExit() },
+                    popEnterTransition = { navPopEnter() },
+                    popExitTransition = { navPopExit() }
+                ) {
                     MetaLearningScreen(navController = navController)
                 }
 
                 composable(
                     route = Screen.GameMemoryMatch.route,
+                    enterTransition = { navEnter() },
+                    exitTransition = { navExit() },
+                    popEnterTransition = { navPopEnter() },
+                    popExitTransition = { navPopExit() },
                     arguments = listOf(navArgument("difficulty") {
                         type = NavType.StringType
                         defaultValue = "easy"
@@ -251,6 +340,10 @@ fun SkillForgeApp() {
                 }
                 composable(
                     route = Screen.GameSpeedRound.route,
+                    enterTransition = { navEnter() },
+                    exitTransition = { navExit() },
+                    popEnterTransition = { navPopEnter() },
+                    popExitTransition = { navPopExit() },
                     arguments = listOf(navArgument("difficulty") {
                         type = NavType.StringType
                         defaultValue = "easy"
@@ -261,6 +354,10 @@ fun SkillForgeApp() {
                 }
                 composable(
                     route = Screen.GamePatternPuzzle.route,
+                    enterTransition = { navEnter() },
+                    exitTransition = { navExit() },
+                    popEnterTransition = { navPopEnter() },
+                    popExitTransition = { navPopExit() },
                     arguments = listOf(navArgument("difficulty") {
                         type = NavType.StringType
                         defaultValue = "easy"
@@ -271,6 +368,10 @@ fun SkillForgeApp() {
                 }
                 composable(
                     route = Screen.GameSimonSays.route,
+                    enterTransition = { navEnter() },
+                    exitTransition = { navExit() },
+                    popEnterTransition = { navPopEnter() },
+                    popExitTransition = { navPopExit() },
                     arguments = listOf(navArgument("difficulty") {
                         type = NavType.StringType
                         defaultValue = "easy"
@@ -281,6 +382,10 @@ fun SkillForgeApp() {
                 }
                 composable(
                     route = Screen.GameCodeBreaker.route,
+                    enterTransition = { navEnter() },
+                    exitTransition = { navExit() },
+                    popEnterTransition = { navPopEnter() },
+                    popExitTransition = { navPopExit() },
                     arguments = listOf(navArgument("difficulty") {
                         type = NavType.StringType
                         defaultValue = "easy"
@@ -291,6 +396,10 @@ fun SkillForgeApp() {
                 }
                 composable(
                     route = Screen.GameWordScramble.route,
+                    enterTransition = { navEnter() },
+                    exitTransition = { navExit() },
+                    popEnterTransition = { navPopEnter() },
+                    popExitTransition = { navPopExit() },
                     arguments = listOf(navArgument("difficulty") {
                         type = NavType.StringType
                         defaultValue = "easy"
@@ -301,6 +410,10 @@ fun SkillForgeApp() {
                 }
                 composable(
                     route = Screen.GameMathDuel.route,
+                    enterTransition = { navEnter() },
+                    exitTransition = { navExit() },
+                    popEnterTransition = { navPopEnter() },
+                    popExitTransition = { navPopExit() },
                     arguments = listOf(navArgument("difficulty") {
                         type = NavType.StringType
                         defaultValue = "easy"
@@ -311,6 +424,10 @@ fun SkillForgeApp() {
                 }
                 composable(
                     route = Screen.GameVisualMemory.route,
+                    enterTransition = { navEnter() },
+                    exitTransition = { navExit() },
+                    popEnterTransition = { navPopEnter() },
+                    popExitTransition = { navPopExit() },
                     arguments = listOf(navArgument("difficulty") {
                         type = NavType.StringType
                         defaultValue = "easy"
@@ -321,6 +438,10 @@ fun SkillForgeApp() {
                 }
                 composable(
                     route = Screen.GameTicTacToe.route,
+                    enterTransition = { navEnter() },
+                    exitTransition = { navExit() },
+                    popEnterTransition = { navPopEnter() },
+                    popExitTransition = { navPopExit() },
                     arguments = listOf(navArgument("difficulty") {
                         type = NavType.StringType
                         defaultValue = "easy"
@@ -331,6 +452,10 @@ fun SkillForgeApp() {
                 }
                 composable(
                     route = Screen.GameColorMatch.route,
+                    enterTransition = { navEnter() },
+                    exitTransition = { navExit() },
+                    popEnterTransition = { navPopEnter() },
+                    popExitTransition = { navPopExit() },
                     arguments = listOf(navArgument("difficulty") {
                         type = NavType.StringType
                         defaultValue = "easy"
@@ -341,6 +466,10 @@ fun SkillForgeApp() {
                 }
                 composable(
                     route = Screen.GameHangman.route,
+                    enterTransition = { navEnter() },
+                    exitTransition = { navExit() },
+                    popEnterTransition = { navPopEnter() },
+                    popExitTransition = { navPopExit() },
                     arguments = listOf(navArgument("difficulty") {
                         type = NavType.StringType
                         defaultValue = "easy"
@@ -351,6 +480,10 @@ fun SkillForgeApp() {
                 }
                 composable(
                     route = Screen.GameReactionTime.route,
+                    enterTransition = { navEnter() },
+                    exitTransition = { navExit() },
+                    popEnterTransition = { navPopEnter() },
+                    popExitTransition = { navPopExit() },
                     arguments = listOf(navArgument("difficulty") {
                         type = NavType.StringType
                         defaultValue = "easy"
@@ -361,6 +494,10 @@ fun SkillForgeApp() {
                 }
                 composable(
                     route = Screen.GameDualNBack.route,
+                    enterTransition = { navEnter() },
+                    exitTransition = { navExit() },
+                    popEnterTransition = { navPopEnter() },
+                    popExitTransition = { navPopExit() },
                     arguments = listOf(navArgument("difficulty") {
                         type = NavType.StringType
                         defaultValue = "easy"
@@ -371,6 +508,10 @@ fun SkillForgeApp() {
                 }
                 composable(
                     route = Screen.GameTriviaSprint.route,
+                    enterTransition = { navEnter() },
+                    exitTransition = { navExit() },
+                    popEnterTransition = { navPopEnter() },
+                    popExitTransition = { navPopExit() },
                     arguments = listOf(navArgument("difficulty") {
                         type = NavType.StringType
                         defaultValue = "easy"
