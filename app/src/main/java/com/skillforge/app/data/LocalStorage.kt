@@ -167,6 +167,8 @@ object LocalStorage {
                 icon = skill.icon,
                 sortOrder = skill.sortOrder,
                 maxLevel = skill.maxLevel,
+                protocol = skill.protocol,
+                scientificBasis = skill.scientificBasis,
                 progress = progress
             )
         }
@@ -216,6 +218,8 @@ data class SkillWithProgress(
     val icon: String,
     val sortOrder: Int,
     val maxLevel: Int = 50,
+    val protocol: String = "",
+    val scientificBasis: String = "",
     val progress: SkillProgress = SkillProgress()
 )
 

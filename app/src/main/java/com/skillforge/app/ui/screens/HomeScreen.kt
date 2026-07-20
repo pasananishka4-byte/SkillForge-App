@@ -42,6 +42,15 @@ import com.skillforge.app.ui.theme.*
 import androidx.compose.ui.graphics.StrokeCap
 import kotlin.random.Random
 
+private fun domainColor(skillId: Long): Color = when (skillId) {
+    1L -> WorkingMemoryColor
+    2L -> ExecutiveControlColor
+    3L -> FluidReasoningColor
+    4L -> ProcessingSpeedColor
+    5L -> AttentionalControlColor
+    else -> Primary
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(navController: NavHostController) {
@@ -273,13 +282,7 @@ private fun TodayChallengesSection(challenges: List<Challenge>, navController: N
                         contentAlignment = Alignment.Center
                     ) {
                         Canvas(modifier = Modifier.fillMaxSize()) {
-                            val catColor = when (skill?.category) {
-                                "Critical Thinking" -> CriticalThinkingColor
-                                "General Knowledge" -> GeneralKnowledgeColor
-                                "Meta-Learning" -> MetaLearningColor
-                                "Social/Emotional" -> SocialEmotionalColor
-                                else -> Primary
-                            }
+                            val catColor = if (skill != null) domainColor(skill.id) else Primary
                             drawRoundRect(color = catColor.copy(alpha = 0.2f))
                         }
                         Text(text = skill?.icon?.firstOrNull()?.toString() ?: "?", fontSize = 20.sp)
@@ -352,13 +355,7 @@ private fun SkillMiniCard(skill: SkillWithProgress, onClick: () -> Unit) {
         (skill.progress.currentXP - currentLevelXp).toFloat() / (nextLevelXp - currentLevelXp).toFloat()
     } else 0f
 
-    val catColor = when (skill.category) {
-        "Critical Thinking" -> CriticalThinkingColor
-        "General Knowledge" -> GeneralKnowledgeColor
-        "Meta-Learning" -> MetaLearningColor
-        "Social/Emotional" -> SocialEmotionalColor
-        else -> Primary
-    }
+    val catColor = domainColor(skill.id)
 
     PremiumCard(onClick = onClick) {
         Column(

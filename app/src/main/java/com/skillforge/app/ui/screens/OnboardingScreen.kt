@@ -64,7 +64,7 @@ fun OnboardingScreen(navController: NavHostController) {
 
             Spacer(modifier = Modifier.height(40.dp))
 
-            Card(
+                    Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = MaterialTheme.shapes.medium,
                 colors = CardDefaults.cardColors(containerColor = Surface)
@@ -73,14 +73,15 @@ fun OnboardingScreen(navController: NavHostController) {
                     Text("What is SkillForge?", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = OnBackground)
                     Spacer(modifier = Modifier.height(12.dp))
                     Text(
-                        "An interactive learning companion that helps you build real-world skills through gamified challenges, puzzles, and brain teasers.",
+                        "Science-based cognitive training through gamified challenges, puzzles, and brain teasers.",
                         style = MaterialTheme.typography.bodyMedium, color = OnSurfaceVariant, textAlign = TextAlign.Center, lineHeight = 22.sp
                     )
                     Spacer(modifier = Modifier.height(16.dp))
-                    FeatureHighlight("🧠  Sharpen critical thinking")
-                    FeatureHighlight("📚  Expand general knowledge")
-                    FeatureHighlight("🔄  Master meta-learning")
-                    FeatureHighlight("💪  Build social-emotional skills")
+                    FeatureHighlight("🧠  Train working memory (Dual N-Back)")
+                    FeatureHighlight("⚙️  Strengthen executive control")
+                    FeatureHighlight("🔮  Boost fluid reasoning")
+                    FeatureHighlight("⚡  Increase processing speed")
+                    FeatureHighlight("🎯  Sharpen attentional control")
                 }
             }
 

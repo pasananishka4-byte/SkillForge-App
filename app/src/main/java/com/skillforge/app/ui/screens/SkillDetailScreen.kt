@@ -39,14 +39,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.skillforge.app.data.Challenge
 import com.skillforge.app.data.GameHistoryEntry
 import com.skillforge.app.data.SkillWithProgress
+import com.skillforge.app.data.TrainingProtocol
 import com.skillforge.app.data.calculateLevelFromXP
 import com.skillforge.app.data.xpForCurrentLevel
 import com.skillforge.app.data.xpForNextLevel
+import com.skillforge.app.data.SeedData
 import com.skillforge.app.ui.AppStorage
 import com.skillforge.app.ui.Screen
 import com.skillforge.app.ui.theme.Background
@@ -62,6 +66,11 @@ import com.skillforge.app.ui.theme.Secondary
 import com.skillforge.app.ui.theme.SuccessColor
 import com.skillforge.app.ui.theme.Surface
 import com.skillforge.app.ui.theme.SurfaceVariant
+import com.skillforge.app.ui.theme.AttentionalControlColor
+import com.skillforge.app.ui.theme.ExecutiveControlColor
+import com.skillforge.app.ui.theme.FluidReasoningColor
+import com.skillforge.app.ui.theme.ProcessingSpeedColor
+import com.skillforge.app.ui.theme.WorkingMemoryColor
 
 private data class DifficultyInfo(
     val name: String,
@@ -86,6 +95,7 @@ fun SkillDetailScreen(
     var skill by remember { mutableStateOf<SkillWithProgress?>(null) }
     var recentRecords by remember { mutableStateOf<List<GameHistoryEntry>>(emptyList()) }
     var challengesByDifficulty by remember { mutableStateOf<Map<String, List<Challenge>>>(emptyMap()) }
+    var protocol by remember { mutableStateOf<TrainingProtocol?>(null) }
 
     LaunchedEffect(skillId) {
         skill = storage.getSkills().find { it.id.toString() == skillId }
@@ -95,6 +105,8 @@ fun SkillDetailScreen(
 
             val allHistory = storage.getGameHistory().filter { it.skillId.toString() == skillId }
             recentRecords = allHistory.sortedByDescending { it.challengeId }.take(5)
+
+            protocol = SeedData.protocols[skill!!.id]
         }
     }
 
@@ -149,6 +161,10 @@ fun SkillDetailScreen(
             Spacer(modifier = Modifier.height(4.dp))
 
             SkillHeader(currentSkill)
+
+            if (protocol != null) {
+                ProtocolSection(protocol!!)
+            }
 
             XpSection(currentSkill)
 
@@ -218,7 +234,75 @@ private fun SkillHeader(skill: SkillWithProgress) {
             Text(
                 text = skill.description,
                 style = MaterialTheme.typography.bodyMedium,
-                color = OnSurfaceVariant
+                color = OnSurfaceVariant,
+                textAlign = TextAlign.Center
+            )
+        }
+    }
+}
+
+@Composable
+private fun ProtocolSection(protocol: TrainingProtocol) {
+    val domColor = when (protocol.name) {
+        "Dual N-Back" -> WorkingMemoryColor
+        "Task Switching + Inhibition" -> ExecutiveControlColor
+        "Matrix Reasoning" -> FluidReasoningColor
+        "Choice Reaction Time" -> ProcessingSpeedColor
+        "Stroop + Sustained Attention" -> AttentionalControlColor
+        else -> Primary
+    }
+
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(containerColor = Surface),
+        shape = RoundedCornerShape(16.dp)
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(
+                text = "Scientific Protocol",
+                style = MaterialTheme.typography.titleSmall,
+                color = OnSurfaceVariant,
+                fontWeight = FontWeight.Medium
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = protocol.name,
+                style = MaterialTheme.typography.titleLarge,
+                color = domColor,
+                fontWeight = FontWeight.Bold
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = protocol.description,
+                style = MaterialTheme.typography.bodyMedium,
+                color = OnSurface
+            )
+            Spacer(modifier = Modifier.height(12.dp))
+            Text(
+                text = "Procedure",
+                style = MaterialTheme.typography.labelMedium,
+                color = OnSurfaceVariant,
+                fontWeight = FontWeight.SemiBold
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = protocol.procedure,
+                style = MaterialTheme.typography.bodySmall,
+                color = OnSurface
+            )
+            Spacer(modifier = Modifier.height(12.dp))
+            Text(
+                text = "Effect Size: ${protocol.effectSize}",
+                style = MaterialTheme.typography.labelMedium,
+                color = Secondary,
+                fontWeight = FontWeight.Medium
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = protocol.citation,
+                style = MaterialTheme.typography.labelSmall,
+                color = OnSurfaceVariant,
+                lineHeight = 16.sp
             )
         }
     }

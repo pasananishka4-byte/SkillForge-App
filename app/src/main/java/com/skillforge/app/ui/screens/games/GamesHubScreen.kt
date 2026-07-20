@@ -30,7 +30,9 @@ data class GameCard(
     val name: String,
     val icon: String,
     val description: String,
-    val route: String
+    val route: String,
+    val domain: String = "",
+    val domainColor: Color = Color.Unspecified
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -40,18 +42,18 @@ fun GamesHubScreen(navController: NavHostController) {
     val stats = remember { AppStorage.storage.getGameStats() }
 
     val games = listOf(
-        GameCard("Memory Match", "🧠", "Find matching pairs", Screen.GameMemoryMatch.createRoute(difficulty)),
-        GameCard("Speed Round", "⚡", "Answer fast", Screen.GameSpeedRound.createRoute(difficulty)),
-        GameCard("Pattern Puzzle", "🔮", "Recreate patterns", Screen.GamePatternPuzzle.createRoute(difficulty)),
-        GameCard("Simon Says", "🎵", "Repeat sequences", Screen.GameSimonSays.createRoute(difficulty)),
-        GameCard("Code Breaker", "🔓", "Crack the code", Screen.GameCodeBreaker.createRoute(difficulty)),
-        GameCard("Word Scramble", "📝", "Unscramble words", Screen.GameWordScramble.createRoute(difficulty)),
-        GameCard("Math Duel", "🧮", "Solve math fast", Screen.GameMathDuel.createRoute(difficulty)),
-        GameCard("Visual Memory", "👁️", "Remember positions", Screen.GameVisualMemory.createRoute(difficulty)),
-        GameCard("Tic Tac Toe", "❌", "Play vs AI", Screen.GameTicTacToe.createRoute(difficulty)),
-        GameCard("Color Match", "🎨", "Stroop test", Screen.GameColorMatch.createRoute(difficulty)),
-        GameCard("Hangman", "💀", "Guess the word", Screen.GameHangman.createRoute(difficulty)),
-        GameCard("Reaction Time", "🏃", "Tap to react", Screen.GameReactionTime.createRoute(difficulty))
+        GameCard("Memory Match", "🧠", "Find matching pairs", Screen.GameMemoryMatch.createRoute(difficulty), "Working Memory", WorkingMemoryColor),
+        GameCard("Speed Round", "⚡", "Answer fast", Screen.GameSpeedRound.createRoute(difficulty), "Processing Speed", ProcessingSpeedColor),
+        GameCard("Pattern Puzzle", "🔮", "Recreate patterns", Screen.GamePatternPuzzle.createRoute(difficulty), "Fluid Reasoning", FluidReasoningColor),
+        GameCard("Simon Says", "🎵", "Repeat sequences", Screen.GameSimonSays.createRoute(difficulty), "Working Memory", WorkingMemoryColor),
+        GameCard("Code Breaker", "🔓", "Crack the code", Screen.GameCodeBreaker.createRoute(difficulty), "Fluid Reasoning", FluidReasoningColor),
+        GameCard("Word Scramble", "📝", "Unscramble words", Screen.GameWordScramble.createRoute(difficulty), "Executive Control", ExecutiveControlColor),
+        GameCard("Math Duel", "🧮", "Solve math fast", Screen.GameMathDuel.createRoute(difficulty), "Processing Speed", ProcessingSpeedColor),
+        GameCard("Visual Memory", "👁️", "Remember positions", Screen.GameVisualMemory.createRoute(difficulty), "Working Memory", WorkingMemoryColor),
+        GameCard("Tic Tac Toe", "❌", "Play vs AI", Screen.GameTicTacToe.createRoute(difficulty), "Executive Control", ExecutiveControlColor),
+        GameCard("Color Match", "🎨", "Stroop test", Screen.GameColorMatch.createRoute(difficulty), "Attentional Control", AttentionalControlColor),
+        GameCard("Hangman", "💀", "Guess the word", Screen.GameHangman.createRoute(difficulty), "Executive Control", ExecutiveControlColor),
+        GameCard("Reaction Time", "🏃", "Tap to react", Screen.GameReactionTime.createRoute(difficulty), "Processing Speed", ProcessingSpeedColor)
     )
 
     GradientBackground {
@@ -120,6 +122,10 @@ fun GamesHubScreen(navController: NavHostController) {
                                 Text(text = game.icon, fontSize = 32.sp)
                                 Spacer(modifier = Modifier.height(8.dp))
                                 Text(text = game.name, color = OnBackground, fontWeight = FontWeight.Bold, fontSize = 13.sp, textAlign = TextAlign.Center)
+                                if (game.domain.isNotBlank()) {
+                                    Spacer(modifier = Modifier.height(2.dp))
+                                    Text(text = game.domain, color = game.domainColor, fontSize = 9.sp, fontWeight = FontWeight.Medium, textAlign = TextAlign.Center)
+                                }
                                 Spacer(modifier = Modifier.height(4.dp))
                                 Text(text = game.description, color = OnSurfaceVariant, fontSize = 10.sp, textAlign = TextAlign.Center)
                                 Spacer(modifier = Modifier.height(8.dp))

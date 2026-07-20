@@ -20,10 +20,16 @@ val OnSurface = Color(0xFFEAEAEE)
 val OnSurfaceVariant = Color(0xFF9898A2)
 val OnSurfaceLow = Color(0xFF6E6E7A)
 
-val CriticalThinkingColor = Color(0xFF9C7CFF)
-val GeneralKnowledgeColor = Color(0xFF64B5F6)
-val MetaLearningColor = Color(0xFFFF8A65)
-val SocialEmotionalColor = Color(0xFFFF80AB)
+val WorkingMemoryColor = Color(0xFF9C7CFF)
+val ExecutiveControlColor = Color(0xFFFF7043)
+val FluidReasoningColor = Color(0xFF64B5F6)
+val ProcessingSpeedColor = Color(0xFF4DD0E1)
+val AttentionalControlColor = Color(0xFFFF80AB)
+
+val CriticalThinkingColor = WorkingMemoryColor
+val GeneralKnowledgeColor = FluidReasoningColor
+val MetaLearningColor = ExecutiveControlColor
+val SocialEmotionalColor = AttentionalControlColor
 
 val EasyColor = Color(0xFF66BB6A)
 val MediumColor = Color(0xFFFFC107)

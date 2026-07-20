@@ -28,6 +28,15 @@ import com.skillforge.app.ui.components.PremiumCard
 import com.skillforge.app.ui.components.SoundToggleButton
 import com.skillforge.app.ui.theme.*
 
+private fun domainColor(skillId: Long): Color = when (skillId) {
+    1L -> WorkingMemoryColor
+    2L -> ExecutiveControlColor
+    3L -> FluidReasoningColor
+    4L -> ProcessingSpeedColor
+    5L -> AttentionalControlColor
+    else -> Primary
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AnalyticsScreen(navController: NavHostController) {
@@ -46,12 +55,6 @@ fun AnalyticsScreen(navController: NavHostController) {
     }
 
     val currentStreak = remember(user) { user.currentStreak }
-    val categoryProgress = remember(skills) {
-        val grouped = skills?.groupBy { it.category } ?: emptyMap()
-        grouped.mapValues { (_, skillList) ->
-            skillList.map { it.progress.level }.average()
-        }
-    }
 
     val difficultyBreakdown = remember(completedChallenges) {
         completedChallenges.groupBy { it.difficulty }.mapValues { it.value.size }
@@ -83,8 +86,8 @@ fun AnalyticsScreen(navController: NavHostController) {
                     ) {
                         StatCard(title = "Total XP", value = "${user.totalXP}", color = Primary, modifier = Modifier.weight(1f))
                         StatCard(title = "Level", value = "$level", color = Secondary, modifier = Modifier.weight(1f))
-                        StatCard(title = "Completed", value = "${completedChallenges.size}", color = CriticalThinkingColor, modifier = Modifier.weight(1f))
-                        StatCard(title = "Streak", value = "$currentStreak", color = SocialEmotionalColor, modifier = Modifier.weight(1f))
+                        StatCard(title = "Completed", value = "${completedChallenges.size}", color = WorkingMemoryColor, modifier = Modifier.weight(1f))
+                        StatCard(title = "Streak", value = "$currentStreak", color = AttentionalControlColor, modifier = Modifier.weight(1f))
                     }
                 }
 
@@ -104,18 +107,15 @@ fun AnalyticsScreen(navController: NavHostController) {
                 }
 
                 item {
-                    SectionHeader("Category Breakdown")
+                    SectionHeader("Domain Breakdown")
                 }
                 item {
                     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                        CategoryCard("Critical Thinking", categoryProgress["Critical Thinking"] ?: 0.0, CriticalThinkingColor, Modifier.weight(1f))
-                        CategoryCard("General Knowledge", categoryProgress["General Knowledge"] ?: 0.0, GeneralKnowledgeColor, Modifier.weight(1f))
-                    }
-                }
-                item {
-                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                        CategoryCard("Meta-Learning", categoryProgress["Meta-Learning"] ?: 0.0, MetaLearningColor, Modifier.weight(1f))
-                        CategoryCard("Social/Emotional", categoryProgress["Social/Emotional"] ?: 0.0, SocialEmotionalColor, Modifier.weight(1f))
+                        if (skills != null) {
+                            skills.forEach { skill ->
+                                DomainCard(skill.name, skill.progress.level.toDouble(), domainColor(skill.id))
+                            }
+                        }
                     }
                 }
 
@@ -167,13 +167,7 @@ private fun SectionHeader(title: String) {
 
 @Composable
 private fun SkillBarRow(skill: SkillWithProgress) {
-    val catColor = when (skill.category) {
-        "Critical Thinking" -> CriticalThinkingColor
-        "General Knowledge" -> GeneralKnowledgeColor
-        "Meta-Learning" -> MetaLearningColor
-        "Social/Emotional" -> SocialEmotionalColor
-        else -> Primary
-    }
+    val catColor = domainColor(skill.id)
     val maxLevel = 50f
     val fillFraction = (skill.progress.level / maxLevel).coerceIn(0f, 1f)
 
@@ -193,8 +187,8 @@ private fun SkillBarRow(skill: SkillWithProgress) {
 }
 
 @Composable
-private fun CategoryCard(name: String, progress: Double, color: Color, modifier: Modifier = Modifier) {
-    val fillFraction = (progress / 50.0).coerceIn(0.0, 1.0).toFloat()
+private fun DomainCard(name: String, level: Double, color: Color) {
+    val fillFraction = (level / 50.0).coerceIn(0.0, 1.0).toFloat()
     PremiumCard {
         Column(modifier = Modifier.fillMaxWidth().padding(14.dp)) {
             Text(name, style = MaterialTheme.typography.labelSmall, color = OnSurfaceVariant)
@@ -208,7 +202,7 @@ private fun CategoryCard(name: String, progress: Double, color: Color, modifier:
                 }
             }
             Spacer(modifier = Modifier.height(4.dp))
-            Text("Avg: ${String.format("%.1f", progress)}", style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold, color = color)
+            Text("Level: ${level.toInt()}", style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold, color = color)
         }
     }
 }
